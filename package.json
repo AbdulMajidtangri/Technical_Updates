@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Personal AI-powered technology and news intelligence dashboard",
+  "imports": {
+    "@/*": "./*"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
