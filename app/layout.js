@@ -1,0 +1,48 @@
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+export const metadata = {
+  title: {
+    default: 'TechPulse AI - Personal News Intelligence Dashboard',
+    template: '%s | TechPulse AI',
+  },
+  description:
+    'AI-powered technology and news intelligence dashboard. Collect, analyze, summarize, and rank the stories that matter.',
+  keywords: ['news', 'AI', 'technology', 'RSS', 'intelligence dashboard'],
+  openGraph: {
+    title: 'TechPulse AI',
+    description: 'Your personal AI-powered news intelligence dashboard.',
+    type: 'website',
+    siteName: 'TechPulse AI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TechPulse AI',
+    description: 'Your personal AI-powered news intelligence dashboard.',
+  },
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans min-h-screen`}>
+        <ThemeProvider>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

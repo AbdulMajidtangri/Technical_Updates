@@ -1,0 +1,201 @@
+import Link from 'next/link';
+import { Sparkles, TrendingUp, BarChart3, Brain, Tag } from 'lucide-react';
+import { fetchAPI } from '@/lib/api/serverFetch';
+import { PageContainer } from '@/components/layout/PageContainer';
+import { TopStoriesSection } from '@/components/news/TopStoriesSection';
+import { NewsGrid } from '@/components/news/NewsGrid';
+import { Badge } from '@/components/ui/Badge';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { getCategorySlug } from '@/lib/config/categories';
+import { formatRelativeTime } from '@/lib/utils/formatDate';
+
+export const dynamic = 'force-dynamic';
+
+function aggregateTags(articles, limit = 12) {
+  const counts = new Map();
+  for (const article of articles) {
+    for (const tag of article.tags ?? []) {
+      const key = String(tag).trim();
+      if (!key) continue;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([tag, count]) => ({ tag, count }));
+}
+
+function groupByCategory(articles, categoryNames) {
+  const map = new Map();
+  for (const name of categoryNames) map.set(name, []);
+  for (const article of articles) {
+    const list = map.get(article.category);
+    if (list && list.length < 4) list.push(article);
+  }
+  return map;
+}
+
+export default async function HomePage() {
+  const [stats, topNews, latestNews] = await Promise.all([
+    fetchAPI('/api/stats'),
+    fetchAPI('/api/news?limit=20&importance=60'),
+    fetchAPI('/api/news?limit=40'),
+  ]);
+
+  const topArticles = topNews?.articles ?? [];
+  const latestArticles = latestNews?.articles ?? [];
+  const statsData = stats ?? {
+    totalArticles: 0,
+    articlesAnalyzed: 0,
+    articlesToday: 0,
+    importantArticles: 0,
+    categories: [],
+    lastUpdated: null,
+  };
+
+  const aiHighlights = latestArticles
+    .filter((a) => a.aiProcessed && (a.importanceScore ?? 0) >= 65)
+    .slice(0, 6);
+
+  const trendingTags = aggregateTags(latestArticles);
+  const topCategories = (statsData.categories ?? [])
+    .filter((c) => c.count > 0)
+    .slice(0, 4)
+    .map((c) => c.category);
+  const categoryGroups = groupByCategory(latestArticles, topCategories);
+
+  return (
+    <>
+      <section className="relative overflow-hidden border-b border-[hsl(var(--border))]">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-50/60 via-transparent to-transparent dark:from-brand-950/40" />
+        <PageContainer className="relative py-12 sm:py-16 lg:py-20">
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+            <div>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-4 py-1.5 text-sm font-medium text-brand-700 dark:border-brand-800 dark:bg-brand-950 dark:text-brand-300">
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                AI-powered news intelligence
+              </div>
+              <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">
+                Your TechPulse command center
+              </h1>
+              <p className="mt-4 text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
+                Ranked stories, plain-language explanations, and developer impact — curated from your RSS pipeline.
+              </p>
+              {statsData.lastUpdated ? (
+                <p className="mt-3 text-sm text-[hsl(var(--muted-foreground))]">
+                  Last updated {formatRelativeTime(statsData.lastUpdated)}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { label: 'Total articles', value: statsData.totalArticles, icon: BarChart3 },
+                { label: 'AI analyzed', value: statsData.articlesAnalyzed, icon: Brain },
+                { label: 'Today', value: statsData.articlesToday, icon: TrendingUp },
+                { label: 'High importance', value: statsData.importantArticles, icon: Sparkles },
+              ].map(({ label, value, icon: Icon }) => (
+                <div
+                  key={label}
+                  className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))]/90 p-4 shadow-sm backdrop-blur"
+                >
+                  <Icon className="mb-2 h-5 w-5 text-brand-600" aria-hidden="true" />
+                  <p className="text-2xl font-bold tabular-nums">{value.toLocaleString()}</p>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))]">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </PageContainer>
+      </section>
+
+      <PageContainer className="space-y-16 py-12">
+        {topArticles.length ? (
+          <TopStoriesSection articles={topArticles} />
+        ) : (
+          <EmptyState
+            title="No top stories yet"
+            description="Run collection and AI processing from Admin to populate your dashboard."
+            action={
+              <Link href="/admin" className="text-sm font-medium text-brand-600 hover:underline">
+                Open admin controls
+              </Link>
+            }
+          />
+        )}
+
+        <section id="latest" aria-labelledby="latest-heading" className="scroll-mt-24 space-y-6">
+          <h2 id="latest-heading" className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Latest news
+          </h2>
+          {latestArticles.length ? (
+            <NewsGrid articles={latestArticles.slice(0, 12)} />
+          ) : (
+            <EmptyState title="No articles" description="Latest feed is empty." />
+          )}
+        </section>
+
+        {topCategories.length ? (
+          <section aria-labelledby="categories-heading" className="space-y-8">
+            <h2 id="categories-heading" className="text-2xl font-bold tracking-tight">
+              Browse by category
+            </h2>
+            {topCategories.map((category) => {
+              const items = categoryGroups.get(category) ?? [];
+              if (!items.length) return null;
+              const slug = getCategorySlug(category);
+              return (
+                <div key={category} className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">{category}</h3>
+                    <Link href={`/categories/${slug}`} className="text-sm font-medium text-brand-600 hover:underline">
+                      See all
+                    </Link>
+                  </div>
+                  <NewsGrid articles={items} columns={4} />
+                </div>
+              );
+            })}
+          </section>
+        ) : null}
+
+        {aiHighlights.length ? (
+          <section aria-labelledby="ai-heading" className="space-y-6">
+            <div className="flex items-center gap-2">
+              <Brain className="h-6 w-6 text-brand-600" aria-hidden="true" />
+              <h2 id="ai-heading" className="text-2xl font-bold tracking-tight">
+                AI highlights
+              </h2>
+            </div>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Processed articles with strong importance scores and developer-ready summaries.
+            </p>
+            <NewsGrid articles={aiHighlights} columns={3} />
+          </section>
+        ) : null}
+
+        {trendingTags.length ? (
+          <section aria-labelledby="tags-heading" className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 sm:p-8">
+            <div className="mb-4 flex items-center gap-2">
+              <Tag className="h-5 w-5 text-brand-600" aria-hidden="true" />
+              <h2 id="tags-heading" className="text-xl font-bold">
+                Trending tags
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {trendingTags.map(({ tag, count }) => (
+                <Link key={tag} href={`/search?q=${encodeURIComponent(tag)}`}>
+                  <Badge variant="outline" className="px-3 py-1 text-sm">
+                    {tag}
+                    <span className="ml-1.5 text-[hsl(var(--muted-foreground))]">({count})</span>
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+      </PageContainer>
+    </>
+  );
+}
