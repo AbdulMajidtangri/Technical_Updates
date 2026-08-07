@@ -92,7 +92,7 @@ export default function SearchPage() {
       {!loading && results.length ? (
         <div className="space-y-4">
           <p className="text-sm text-[hsl(var(--muted-foreground))]">{results.length} result(s)</p>
-          <NewsGrid articles={results} />
+          <NewsGrid articles={results} layout="list" />
         </div>
       ) : null}
     </PageContainer>

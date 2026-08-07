@@ -1,6 +1,8 @@
-export function PageContainer({ children, className = '' }) {
+export function PageContainer({ children, className = "", narrow = false }) {
   return (
-    <div className={`mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 ${className}`}>{children}</div>
+    <div className={`mx-auto w-full px-4 sm:px-6 lg:px-8 ${narrow ? "max-w-4xl" : "max-w-6xl"} ${className}`}>
+      {children}
+    </div>
   );
 }
 

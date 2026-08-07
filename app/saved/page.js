@@ -73,7 +73,7 @@ export default function SavedPage() {
         />
       ) : null}
 
-      {hydrated && !loading && articles.length ? <NewsGrid articles={articles} /> : null}
+      {hydrated && !loading && articles.length ? <NewsGrid articles={articles} layout="list" /> : null}
     </PageContainer>
   );
 }

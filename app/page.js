@@ -1,15 +1,18 @@
-import Link from 'next/link';
-import { Sparkles, TrendingUp, BarChart3, Brain, Tag } from 'lucide-react';
-import { fetchAPI } from '@/lib/api/serverFetch';
-import { PageContainer } from '@/components/layout/PageContainer';
-import { TopStoriesSection } from '@/components/news/TopStoriesSection';
-import { NewsGrid } from '@/components/news/NewsGrid';
-import { Badge } from '@/components/ui/Badge';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { getCategorySlug } from '@/lib/config/categories';
-import { formatRelativeTime } from '@/lib/utils/formatDate';
+import Link from "next/link";
+import { getStats, getArticles } from "@/lib/data/articles.js";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { TopStoriesSection } from "@/components/news/TopStoriesSection";
+import { NewsGrid } from "@/components/news/NewsGrid";
+import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { MissedNewsSection } from "@/components/intelligence/MissedNewsSection";
+import { BriefingSection } from "@/components/intelligence/BriefingSection";
+import { getDevelopingStories } from "@/lib/data/stories.js";
+import { getCategorySlug } from "@/lib/config/categories";
+import { formatRelativeTime } from "@/lib/utils/formatDate";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 function aggregateTags(articles, limit = 12) {
   const counts = new Map();
@@ -20,10 +23,7 @@ function aggregateTags(articles, limit = 12) {
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
   }
-  return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, limit)
-    .map(([tag, count]) => ({ tag, count }));
+  return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([tag, count]) => ({ tag, count }));
 }
 
 function groupByCategory(articles, categoryNames) {
@@ -36,73 +36,68 @@ function groupByCategory(articles, categoryNames) {
   return map;
 }
 
-export default async function HomePage() {
-  const [stats, topNews, latestNews] = await Promise.all([
-    fetchAPI('/api/stats'),
-    fetchAPI('/api/news?limit=20&importance=60'),
-    fetchAPI('/api/news?limit=40'),
-  ]);
+function formatToday() {
+  return new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(new Date());
+}
 
+export default async function HomePage() {
+  let stats = null;
+  let topNews = null;
+  let latestNews = null;
+
+  let developingStories = [];
+
+  try {
+    [stats, topNews, latestNews] = await Promise.all([
+      getStats(),
+      getArticles({ limit: 20, importance: 60 }),
+      getArticles({ limit: 40 }),
+    ]);
+    developingStories = await getDevelopingStories(6);
+  } catch {
+    stats = null;
+  }
+
+  const dbConnected = stats !== null;
   const topArticles = topNews?.articles ?? [];
   const latestArticles = latestNews?.articles ?? [];
-  const statsData = stats ?? {
-    totalArticles: 0,
-    articlesAnalyzed: 0,
-    articlesToday: 0,
-    importantArticles: 0,
-    categories: [],
-    lastUpdated: null,
-  };
+  const statsData = stats ?? { totalArticles: 0, articlesAnalyzed: 0, articlesToday: 0, importantArticles: 0, categories: [], lastUpdated: null };
 
-  const aiHighlights = latestArticles
-    .filter((a) => a.aiProcessed && (a.importanceScore ?? 0) >= 65)
-    .slice(0, 6);
-
+  const aiHighlights = latestArticles.filter((a) => a.aiProcessed && (a.importanceScore ?? 0) >= 65).slice(0, 6);
   const trendingTags = aggregateTags(latestArticles);
-  const topCategories = (statsData.categories ?? [])
-    .filter((c) => c.count > 0)
-    .slice(0, 4)
-    .map((c) => c.category);
+  const topCategories = (statsData.categories ?? []).filter((c) => c.count > 0).slice(0, 4).map((c) => c.category);
   const categoryGroups = groupByCategory(latestArticles, topCategories);
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-[hsl(var(--border))]">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-50/60 via-transparent to-transparent dark:from-brand-950/40" />
-        <PageContainer className="relative py-12 sm:py-16 lg:py-20">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-            <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-4 py-1.5 text-sm font-medium text-brand-700 dark:border-brand-800 dark:bg-brand-950 dark:text-brand-300">
-                <Sparkles className="h-4 w-4" aria-hidden="true" />
-                AI-powered news intelligence
-              </div>
-              <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">
-                Your TechPulse command center
+      <section className="border-b border-[hsl(var(--border))] bg-[hsl(var(--card))]">
+        <PageContainer className="py-10 sm:py-14">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="section-label">{formatToday()}</p>
+              <h1 className="mt-3 font-serif text-3xl font-semibold tracking-tight sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
+                Don&apos;t just read the news. Understand what it means.
               </h1>
-              <p className="mt-4 text-lg leading-relaxed text-[hsl(var(--muted-foreground))]">
-                Ranked stories, plain-language explanations, and developer impact — curated from your RSS pipeline.
+              <p className="mt-4 text-base leading-relaxed text-[hsl(var(--muted-foreground))] sm:text-lg">
+                AI-powered news intelligence — collect, understand, analyze impact, connect stories, and explore scenarios.
               </p>
               {statsData.lastUpdated ? (
                 <p className="mt-3 text-sm text-[hsl(var(--muted-foreground))]">
-                  Last updated {formatRelativeTime(statsData.lastUpdated)}
+                  Last sync {formatRelativeTime(statsData.lastUpdated)}
                 </p>
               ) : null}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid w-full max-w-lg grid-cols-2 gap-px overflow-hidden rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--border))] sm:grid-cols-4 lg:max-w-xl">
               {[
-                { label: 'Total articles', value: statsData.totalArticles, icon: BarChart3 },
-                { label: 'AI analyzed', value: statsData.articlesAnalyzed, icon: Brain },
-                { label: 'Today', value: statsData.articlesToday, icon: TrendingUp },
-                { label: 'High importance', value: statsData.importantArticles, icon: Sparkles },
-              ].map(({ label, value, icon: Icon }) => (
-                <div
-                  key={label}
-                  className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))]/90 p-4 shadow-sm backdrop-blur"
-                >
-                  <Icon className="mb-2 h-5 w-5 text-brand-600" aria-hidden="true" />
-                  <p className="text-2xl font-bold tabular-nums">{value.toLocaleString()}</p>
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">{label}</p>
+                ["Articles", statsData.totalArticles],
+                ["Analyzed", statsData.articlesAnalyzed],
+                ["Today", statsData.articlesToday],
+                ["Priority", statsData.importantArticles],
+              ].map(([label, value]) => (
+                <div key={label} className="bg-[hsl(var(--card))] px-4 py-4 text-center sm:py-5">
+                  <p className="font-serif text-2xl font-semibold tabular-nums">{Number(value).toLocaleString()}</p>
+                  <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]">{label}</p>
                 </div>
               ))}
             </div>
@@ -110,50 +105,65 @@ export default async function HomePage() {
         </PageContainer>
       </section>
 
-      <PageContainer className="space-y-16 py-12">
-        {topArticles.length ? (
-          <TopStoriesSection articles={topArticles} />
-        ) : (
-          <EmptyState
-            title="No top stories yet"
-            description="Run collection and AI processing from Admin to populate your dashboard."
-            action={
-              <Link href="/admin" className="text-sm font-medium text-brand-600 hover:underline">
-                Open admin controls
-              </Link>
-            }
-          />
-        )}
+      <PageContainer className="space-y-20 py-12 sm:py-16">
+        {!dbConnected ? (
+          <div role="alert" className="rounded-lg border border-amber-300/80 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-950/30">
+            <h2 className="font-serif text-lg font-semibold">Database not connected</h2>
+            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">Configure <code className="rounded bg-[hsl(var(--muted))] px-1">.env.local</code> and restart the server.</p>
+            <Link href="/admin" className="link-accent mt-4 inline-block text-sm font-medium">Admin setup →</Link>
+          </div>
+        ) : null}
 
-        <section id="latest" aria-labelledby="latest-heading" className="scroll-mt-24 space-y-6">
-          <h2 id="latest-heading" className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Latest news
-          </h2>
-          {latestArticles.length ? (
-            <NewsGrid articles={latestArticles.slice(0, 12)} />
-          ) : (
-            <EmptyState title="No articles" description="Latest feed is empty." />
-          )}
+        {dbConnected && !topArticles.length && !latestArticles.length ? (
+          <div role="status" className="card-premium p-8 text-center">
+            <h2 className="font-serif text-xl font-semibold">No articles in your library</h2>
+            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">Run a sync from Admin to populate your dashboard.</p>
+            <Link href="/admin" className="mt-6 inline-flex rounded-md bg-[hsl(var(--foreground))] px-5 py-2.5 text-sm font-medium text-[hsl(var(--background))]">Open Admin</Link>
+          </div>
+        ) : null}
+
+        {dbConnected && (topArticles.length || latestArticles.length) ? <BriefingSection /> : null}
+
+        {topArticles.length ? <TopStoriesSection articles={topArticles} /> : null}
+
+        <MissedNewsSection />
+
+        {developingStories.length ? (
+          <section className="space-y-6">
+            <SectionHeader label="Stories" title="Developing stories" description="Ongoing events tracked across multiple articles." href="/stories" />
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {developingStories.map((story) => (
+                <li key={story.id}>
+                  <Link href={`/stories/${story.slug}`} prefetch className="card-premium block h-full p-5 transition hover:shadow-elevated">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-[hsl(var(--accent))]">{story.status}</p>
+                    <h3 className="mt-2 font-serif text-lg font-semibold">{story.title}</h3>
+                    <p className="mt-2 line-clamp-2 text-sm text-[hsl(var(--muted-foreground))]">{story.description || `${story.timeline?.length ?? 0} developments tracked`}</p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        <section id="latest" className="scroll-mt-24 space-y-8">
+          <SectionHeader label="Feed" title="Latest news" description="Recently collected and ranked stories across all sources." />
+          {latestArticles.length ? <NewsGrid articles={latestArticles.slice(0, 12)} /> : <EmptyState title="No articles" description="Latest feed is empty." />}
         </section>
 
         {topCategories.length ? (
-          <section aria-labelledby="categories-heading" className="space-y-8">
-            <h2 id="categories-heading" className="text-2xl font-bold tracking-tight">
-              Browse by category
-            </h2>
+          <section className="space-y-12">
+            <SectionHeader label="Topics" title="Browse by category" href="/categories" />
             {topCategories.map((category) => {
               const items = categoryGroups.get(category) ?? [];
               if (!items.length) return null;
               const slug = getCategorySlug(category);
               return (
-                <div key={category} className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">{category}</h3>
-                    <Link href={`/categories/${slug}`} className="text-sm font-medium text-brand-600 hover:underline">
-                      See all
-                    </Link>
+                <div key={category} className="space-y-5">
+                  <div className="flex items-center justify-between border-b border-[hsl(var(--border))] pb-3">
+                    <h3 className="font-serif text-xl font-semibold">{category}</h3>
+                    <Link href={`/categories/${slug}`} prefetch className="link-accent text-sm font-medium">View all →</Link>
                   </div>
-                  <NewsGrid articles={items} columns={4} />
+                  <NewsGrid articles={items} columns={3} variant="compact" showCategory={false} />
                 </div>
               );
             })}
@@ -161,34 +171,21 @@ export default async function HomePage() {
         ) : null}
 
         {aiHighlights.length ? (
-          <section aria-labelledby="ai-heading" className="space-y-6">
-            <div className="flex items-center gap-2">
-              <Brain className="h-6 w-6 text-brand-600" aria-hidden="true" />
-              <h2 id="ai-heading" className="text-2xl font-bold tracking-tight">
-                AI highlights
-              </h2>
-            </div>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">
-              Processed articles with strong importance scores and developer-ready summaries.
-            </p>
+          <section className="space-y-8">
+            <SectionHeader label="Analysis" title="Intelligence highlights" description="AI-processed stories with strong significance scores." />
             <NewsGrid articles={aiHighlights} columns={3} />
           </section>
         ) : null}
 
         {trendingTags.length ? (
-          <section aria-labelledby="tags-heading" className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 sm:p-8">
-            <div className="mb-4 flex items-center gap-2">
-              <Tag className="h-5 w-5 text-brand-600" aria-hidden="true" />
-              <h2 id="tags-heading" className="text-xl font-bold">
-                Trending tags
-              </h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
+          <section className="card-premium p-6 sm:p-8">
+            <SectionHeader label="Trends" title="Popular tags" />
+            <div className="mt-6 flex flex-wrap gap-2">
               {trendingTags.map(({ tag, count }) => (
-                <Link key={tag} href={`/search?q=${encodeURIComponent(tag)}`}>
-                  <Badge variant="outline" className="px-3 py-1 text-sm">
+                <Link key={tag} href={`/search?q=${encodeURIComponent(tag)}`} prefetch>
+                  <Badge variant="outline" className="cursor-pointer px-3 py-1 normal-case tracking-normal hover:bg-[hsl(var(--muted))]">
                     {tag}
-                    <span className="ml-1.5 text-[hsl(var(--muted-foreground))]">({count})</span>
+                    <span className="ml-1.5 opacity-60">({count})</span>
                   </Badge>
                 </Link>
               ))}

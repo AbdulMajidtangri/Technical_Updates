@@ -1,32 +1,37 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useState } from 'react';
-import { Newspaper } from 'lucide-react';
+import { useState } from "react";
+import { Newspaper } from "lucide-react";
 
-export function ArticleImage({ src, alt, className = '', priority = false, sizes = '(max-width: 768px) 100vw, 33vw' }) {
+function normalizeImageUrl(src) {
+  if (!src) return "";
+  try {
+    const url = new URL(src);
+    if (url.protocol === "http:") { url.protocol = "https:"; return url.toString(); }
+    return src;
+  } catch { return src; }
+}
+
+export function ArticleImage({ src, alt, className = "", priority = false }) {
   const [failed, setFailed] = useState(false);
-  const showFallback = !src || failed;
+  const imageSrc = normalizeImageUrl(src);
+  const showFallback = !imageSrc || failed;
 
   if (showFallback) {
     return (
-      <div
-        className={`flex items-center justify-center bg-gradient-to-br from-brand-100 to-brand-200 dark:from-brand-950 dark:to-brand-900 ${className}`}
-        aria-hidden={!alt}
-      >
-        <Newspaper className="h-10 w-10 text-brand-500/70" />
+      <div className={`absolute inset-0 flex items-center justify-center bg-[hsl(var(--surface))] ${className}`} aria-hidden={!alt}>
+        <Newspaper className="h-8 w-8 text-[hsl(var(--muted-foreground))]/40" />
       </div>
     );
   }
 
   return (
-    <Image
-      src={src}
-      alt={alt || ''}
-      fill
-      className={`object-cover ${className}`}
-      sizes={sizes}
-      priority={priority}
+    <img
+      src={imageSrc}
+      alt={alt || ""}
+      loading={priority ? "eager" : "lazy"}
+      decoding="async"
+      className={`absolute inset-0 h-full w-full object-cover ${className}`}
       onError={() => setFailed(true)}
     />
   );
