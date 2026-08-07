@@ -1,100 +1,201 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Bookmark, CheckCircle2, ExternalLink } from 'lucide-react';
-import { formatRelativeTime } from '@/lib/utils/formatDate';
-import { getCategorySlug } from '@/lib/config/categories';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { ImportanceIndicator } from '@/components/ui/ImportanceIndicator';
-import { useSavedArticles } from '@/hooks/useSavedArticles';
-import { useReadArticles } from '@/hooks/useReadArticles';
-import { ArticleImage } from './ArticleImage';
+import Link from "next/link";
+import { Bookmark, ExternalLink, ArrowRight } from "lucide-react";
+import { formatRelativeTime } from "@/lib/utils/formatDate";
+import { getCategorySlug } from "@/lib/config/categories";
+import { ImportanceIndicator } from "@/components/ui/ImportanceIndicator";
+import { useSavedArticles } from "@/hooks/useSavedArticles";
+import { useReadArticles } from "@/hooks/useReadArticles";
+import { ArticleImage } from "./ArticleImage";
 
-export function NewsCard({ article, variant = 'default' }) {
+function CardActions({ article, saved, onToggleSave, onMarkRead }) {
+  return (
+    <div className="flex shrink-0 items-center gap-1">
+      <button
+        type="button"
+        onClick={onToggleSave}
+        className="rounded p-1.5 text-[hsl(var(--muted-foreground))] transition hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))]"
+        aria-label={saved ? "Remove from saved" : "Save article"}
+        aria-pressed={saved}
+      >
+        <Bookmark className={`h-3.5 w-3.5 ${saved ? "fill-[hsl(var(--accent))] text-[hsl(var(--accent))]" : ""}`} />
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          onMarkRead();
+          window.open(article.articleUrl, "_blank", "noopener,noreferrer");
+        }}
+        className="rounded p-1.5 text-[hsl(var(--muted-foreground))] transition hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))]"
+        aria-label="Open original article"
+      >
+        <ExternalLink className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
+}
+
+function CardMeta({ article, showCategory = true }) {
+  const categorySlug = getCategorySlug(article.category);
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-[hsl(var(--muted-foreground))]">
+      {showCategory && article.category ? (
+        <>
+          <Link
+            href={`/categories/${categorySlug}`}
+            prefetch
+            className="font-medium uppercase tracking-wide text-[hsl(var(--accent))] hover:opacity-80"
+          >
+            {article.category}
+          </Link>
+          <span aria-hidden="true">·</span>
+        </>
+      ) : null}
+      <span className="font-medium text-[hsl(var(--foreground))]">{article.sourceName}</span>
+      <span aria-hidden="true">·</span>
+      <time dateTime={article.publishedAt ?? undefined}>{formatRelativeTime(article.publishedAt)}</time>
+    </div>
+  );
+}
+
+function AiSummary({ article, compact = false }) {
+  const text = article.simpleExplanation || article.summary;
+  if (!text) return null;
+
+  return (
+    <div className={`rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--surface))] ${compact ? "mt-2 p-2.5" : "mt-3 p-3 sm:p-3.5"}`}>
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-[hsl(var(--muted-foreground))]">AI summary</p>
+      <p className={`mt-1.5 leading-relaxed text-[hsl(var(--foreground))] ${compact ? "line-clamp-2 text-xs" : "line-clamp-3 text-sm"}`}>
+        {text}
+      </p>
+    </div>
+  );
+}
+
+function CardFooter({ article, saved, onToggleSave, onMarkRead }) {
+  return (
+    <div className="mt-auto flex items-center justify-between gap-3 border-t border-[hsl(var(--border))] pt-3">
+      <ImportanceIndicator score={article.importanceScore} />
+      <div className="flex items-center gap-2">
+        <Link
+          href={`/news/${article.slug}`}
+          prefetch
+          className="inline-flex items-center gap-1 text-xs font-medium text-[hsl(var(--accent))] hover:opacity-80"
+        >
+          Read more
+          <ArrowRight className="h-3 w-3" aria-hidden="true" />
+        </Link>
+        <CardActions article={article} saved={saved} onToggleSave={onToggleSave} onMarkRead={onMarkRead} />
+      </div>
+    </div>
+  );
+}
+
+export function NewsCard({ article, variant = "default", featured = false, showCategory = true }) {
   const { isSaved, toggleSaved, hydrated: savedReady } = useSavedArticles();
-  const { isRead, markRead, toggleRead, hydrated: readReady } = useReadArticles();
+  const { isRead, markRead, hydrated: readReady } = useReadArticles();
 
   if (!article?.slug) return null;
 
   const read = readReady && isRead(article.id);
   const saved = savedReady && isSaved(article.id);
-  const categorySlug = getCategorySlug(article.category);
+  const resolvedVariant = featured ? "featured" : variant;
+  const mark = () => markRead(article.id);
+
+  if (resolvedVariant === "list") {
+    return (
+      <article className={`group flex gap-4 py-5 sm:gap-5 sm:py-6 ${read ? "opacity-70" : ""}`}>
+        <Link
+          href={`/news/${article.slug}`}
+          prefetch
+          onClick={mark}
+          className="relative block h-[72px] w-[96px] shrink-0 overflow-hidden rounded-md bg-[hsl(var(--surface))] sm:h-[88px] sm:w-[120px]"
+        >
+          <ArticleImage src={article.imageUrl} alt="" className="transition duration-300 group-hover:scale-[1.04]" />
+        </Link>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <CardMeta article={article} showCategory={showCategory} />
+          <h3 className="mt-2 font-serif text-base font-semibold leading-snug sm:text-[1.05rem]">
+            <Link href={`/news/${article.slug}`} prefetch onClick={mark} className="hover:text-[hsl(var(--accent))] transition-colors">
+              {article.title}
+            </Link>
+          </h3>
+          <AiSummary article={article} compact />
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <ImportanceIndicator score={article.importanceScore} />
+            <div className="flex items-center gap-2">
+              <Link href={`/news/${article.slug}`} prefetch className="text-xs font-medium text-[hsl(var(--accent))] hover:opacity-80">
+                Read more
+              </Link>
+              <CardActions article={article} saved={saved} onToggleSave={() => toggleSaved(article.id)} onMarkRead={mark} />
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  if (resolvedVariant === "featured") {
+    return (
+      <article className={`card-premium group overflow-hidden transition-shadow hover:shadow-elevated lg:flex ${read ? "opacity-75" : ""}`}>
+        <Link
+          href={`/news/${article.slug}`}
+          prefetch
+          onClick={mark}
+          className="relative block aspect-[16/10] shrink-0 overflow-hidden bg-[hsl(var(--surface))] lg:aspect-auto lg:w-[52%] lg:min-h-[280px]"
+        >
+          <ArticleImage src={article.imageUrl} alt="" priority className="transition duration-500 group-hover:scale-[1.03]" />
+          {read ? (
+            <span className="absolute left-3 top-3 rounded bg-[hsl(var(--foreground))]/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[hsl(var(--background))]">
+              Read
+            </span>
+          ) : null}
+        </Link>
+
+        <div className="flex flex-1 flex-col p-5 sm:p-6 lg:py-8 lg:pl-8 lg:pr-7">
+          <CardMeta article={article} showCategory={showCategory} />
+          <h3 className="mt-3 font-serif text-xl font-semibold leading-snug sm:text-2xl lg:text-[1.65rem]">
+            <Link href={`/news/${article.slug}`} prefetch onClick={mark} className="hover:text-[hsl(var(--accent))] transition-colors">
+              {article.title}
+            </Link>
+          </h3>
+          <AiSummary article={article} />
+          <CardFooter article={article} saved={saved} onToggleSave={() => toggleSaved(article.id)} onMarkRead={mark} />
+        </div>
+      </article>
+    );
+  }
+
+  const isCompact = resolvedVariant === "compact";
 
   return (
-    <article
-      className={`group flex h-full flex-col overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-sm transition hover:border-brand-300 hover:shadow-md dark:hover:border-brand-800 ${
-        read ? 'opacity-80' : ''
-      }`}
-    >
-      <Link href={`/news/${article.slug}`} className="relative block aspect-[16/9] overflow-hidden">
-        <ArticleImage src={article.imageUrl} alt="" className="transition duration-300 group-hover:scale-[1.02]" />
+    <article className={`card-premium group flex h-full flex-col overflow-hidden transition-shadow hover:shadow-elevated ${read ? "opacity-75" : ""}`}>
+      <Link
+        href={`/news/${article.slug}`}
+        prefetch
+        onClick={mark}
+        className={`relative block shrink-0 overflow-hidden bg-[hsl(var(--surface))] ${isCompact ? "aspect-[3/2]" : "aspect-[4/3]"}`}
+      >
+        <ArticleImage src={article.imageUrl} alt="" className="transition duration-300 group-hover:scale-[1.03]" />
         {read ? (
-          <span className="absolute left-3 top-3 rounded-full bg-emerald-600/90 px-2 py-0.5 text-xs font-medium text-white">
+          <span className="absolute left-2.5 top-2.5 rounded bg-[hsl(var(--foreground))]/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[hsl(var(--background))]">
             Read
           </span>
         ) : null}
       </Link>
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <Link href={`/categories/${categorySlug}`}>
-            <Badge variant="brand">{article.category}</Badge>
-          </Link>
-          {article.aiProcessed ? <Badge variant="success">AI</Badge> : null}
-          {article.developerImpact ? (
-            <Badge variant="outline">Dev {article.developerImpact}</Badge>
-          ) : null}
-        </div>
-
-        <h3 className={`text-base font-semibold leading-snug sm:text-lg ${read ? 'text-[hsl(var(--muted-foreground))]' : ''}`}>
-          <Link href={`/news/${article.slug}`} className="hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+      <div className={`flex flex-1 flex-col ${isCompact ? "p-4" : "p-4 sm:p-5"}`}>
+        <CardMeta article={article} showCategory={showCategory} />
+        <h3 className={`mt-2 font-serif font-semibold leading-snug ${isCompact ? "text-[0.9375rem] line-clamp-3" : "text-base sm:text-lg line-clamp-2"}`}>
+          <Link href={`/news/${article.slug}`} prefetch onClick={mark} className="hover:text-[hsl(var(--accent))] transition-colors">
             {article.title}
           </Link>
         </h3>
-
-        {variant !== 'compact' && article.summary ? (
-          <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
-            {article.summary}
-          </p>
-        ) : null}
-
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[hsl(var(--border))] pt-3 text-xs text-[hsl(var(--muted-foreground))]">
-          <div className="flex flex-col gap-1">
-            <span>{article.sourceName}</span>
-            <time dateTime={article.publishedAt ?? undefined}>{formatRelativeTime(article.publishedAt)}</time>
-          </div>
-          <ImportanceIndicator score={article.importanceScore} />
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={() => toggleSaved(article.id)}
-            aria-pressed={saved}
-          >
-            <Bookmark className={`h-4 w-4 ${saved ? 'fill-brand-600 text-brand-600' : ''}`} />
-            {saved ? 'Saved' : 'Save'}
-          </Button>
-          <Button type="button" variant="ghost" size="sm" onClick={() => toggleRead(article.id)} aria-pressed={read}>
-            <CheckCircle2 className={`h-4 w-4 ${read ? 'text-emerald-600' : ''}`} />
-            {read ? 'Unread' : 'Mark read'}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              markRead(article.id);
-              window.open(article.articleUrl, '_blank', 'noopener,noreferrer');
-            }}
-          >
-            <ExternalLink className="h-4 w-4" />
-            Source
-          </Button>
-        </div>
+        {!isCompact ? <AiSummary article={article} /> : null}
+        <CardFooter article={article} saved={saved} onToggleSave={() => toggleSaved(article.id)} onMarkRead={mark} />
       </div>
     </article>
   );

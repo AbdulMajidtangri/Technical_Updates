@@ -1,21 +1,16 @@
-import { PageContainer } from '@/components/layout/PageContainer';
-import { Skeleton, SkeletonCard } from '@/components/ui/Skeleton';
+import { PageContainer } from "@/components/layout/PageContainer";
+import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
 
 export default function Loading() {
   return (
-    <PageContainer>
-      <div className="space-y-10">
+    <PageContainer className="py-12">
+      <div className="space-y-12">
         <div className="space-y-4">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-12 w-full max-w-2xl" />
-          <Skeleton className="h-6 w-full max-w-xl" />
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-12 w-full max-w-xl" />
+          <Skeleton className="h-5 w-full max-w-lg" />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-24" />
-          ))}
-        </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <SkeletonCard key={i} />
           ))}

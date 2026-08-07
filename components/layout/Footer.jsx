@@ -1,26 +1,48 @@
-import Link from 'next/link';
+import Link from "next/link";
+
+const LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/#latest", label: "Latest" },
+  { href: "/categories", label: "Categories" },
+  { href: "/saved", label: "Saved" },
+  { href: "/search", label: "Search" },
+];
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-[hsl(var(--border))] bg-[hsl(var(--card))]/60">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-        <div>
-          <p className="font-semibold">TechPulse AI</p>
-          <p className="mt-1 max-w-md text-sm text-[hsl(var(--muted-foreground))]">
-            Personal news intelligence — collect, rank, and explain technology stories with AI.
+    <footer className="mt-auto border-t border-[hsl(var(--border))] bg-[hsl(var(--surface))]">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-3 lg:px-8">
+        <div className="lg:col-span-1">
+          <p className="font-serif text-lg font-semibold">TechPulse AI</p>
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+            A professional news intelligence dashboard for technology, business, and global developments.
           </p>
         </div>
-        <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-[hsl(var(--muted-foreground))]" aria-label="Footer">
-          <Link href="/" className="hover:text-brand-600">Home</Link>
-          <Link href="/#latest" className="hover:text-brand-600">Latest</Link>
-          <Link href="/categories" className="hover:text-brand-600">Categories</Link>
-          <Link href="/saved" className="hover:text-brand-600">Saved</Link>
-          <Link href="/search" className="hover:text-brand-600">Search</Link>
-          <Link href="/admin" className="hover:text-brand-600">Admin</Link>
-        </nav>
+        <div>
+          <p className="section-label mb-4">Navigate</p>
+          <ul className="space-y-2.5 text-sm">
+            {LINKS.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="text-[hsl(var(--muted-foreground))] transition hover:text-[hsl(var(--foreground))]">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="section-label mb-4">System</p>
+          <ul className="space-y-2.5 text-sm">
+            <li>
+              <Link href="/admin" className="text-[hsl(var(--muted-foreground))] transition hover:text-[hsl(var(--foreground))]">
+                Admin controls
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div className="border-t border-[hsl(var(--border))] py-4 text-center text-xs text-[hsl(var(--muted-foreground))]">
-        © {new Date().getFullYear()} TechPulse AI
+      <div className="border-t border-[hsl(var(--border))] py-5 text-center text-xs text-[hsl(var(--muted-foreground))]">
+        © {new Date().getFullYear()} TechPulse AI. All rights reserved.
       </div>
     </footer>
   );

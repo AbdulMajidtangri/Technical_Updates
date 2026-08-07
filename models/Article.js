@@ -11,6 +11,27 @@ const ArticleSchema = new mongoose.Schema(
     summary: { type: String, default: "", maxlength: 2000 },
     simpleExplanation: { type: String, default: "", maxlength: 1000 },
     whyItMatters: { type: String, default: "", maxlength: 1500 },
+    whatHappened: { type: String, default: "", maxlength: 1500 },
+    keyFacts: { type: [String], default: [] },
+    unknowns: { type: [String], default: [] },
+    affectedGroups: {
+      type: [
+        {
+          group: { type: String, trim: true },
+          explanation: { type: String, maxlength: 500 },
+        },
+      ],
+      default: [],
+    },
+    entities: { type: [String], default: [], index: true },
+    topics: { type: [String], default: [] },
+    storyId: { type: mongoose.Schema.Types.ObjectId, ref: "Story", index: true },
+    intelligenceCache: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+    learningData: { type: mongoose.Schema.Types.Mixed },
+    aiProcessedAt: { type: Date },
     sourceName: { type: String, default: "", trim: true, index: true },
     sourceUrl: { type: String, default: "", trim: true },
     articleUrl: { type: String, required: true, trim: true, unique: true, index: true },
