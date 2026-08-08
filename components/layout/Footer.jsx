@@ -31,14 +31,10 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <p className="section-label mb-4">System</p>
-          <ul className="space-y-2.5 text-sm">
-            <li>
-              <Link href="/admin" className="text-[hsl(var(--muted-foreground))] transition hover:text-[hsl(var(--foreground))]">
-                Admin controls
-              </Link>
-            </li>
-          </ul>
+          <p className="section-label mb-4">About</p>
+          <p className="text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+            Built for calm, professional news reading with AI summaries and a personal reading guide.
+          </p>
         </div>
       </div>
       <div className="border-t border-[hsl(var(--border))] py-5 text-center text-xs text-[hsl(var(--muted-foreground))]">

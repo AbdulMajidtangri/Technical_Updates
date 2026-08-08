@@ -1,8 +1,7 @@
 import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { HashScrollHandler } from "@/components/navigation/HashScrollHandler";
 
 const inter = Inter({
@@ -31,11 +30,7 @@ export default function RootLayout({ children }) {
       <body className={`${inter.variable} ${sourceSerif.variable} font-sans min-h-screen`}>
         <ThemeProvider>
           <HashScrollHandler />
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          <SiteChrome>{children}</SiteChrome>
         </ThemeProvider>
       </body>
     </html>
