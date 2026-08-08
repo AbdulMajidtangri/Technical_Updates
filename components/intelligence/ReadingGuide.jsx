@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -142,55 +142,59 @@ export function ReadingGuide({ articleId, sourceUrl }) {
   const [quizAnswers, setQuizAnswers] = useState({});
   const { knowledgeProfile, markAlreadyKnow, markUnderstood, recordQuizResult, hydrated } =
     useKnowledgeProfile();
+  const profileRef = useRef(knowledgeProfile);
+  profileRef.current = knowledgeProfile;
 
-  useEffect(() => {
+  const loadGuide = useCallback(async () => {
     if (!articleId || !hydrated) return;
 
-    let cancelled = false;
+    setLearnLoading(true);
+    setActionLoading(true);
+    setLearnError("");
+    setActionError("");
+    setLearnData(null);
+    setActionData(null);
 
-    async function loadGuide() {
-      setLearnLoading(true);
-      setActionLoading(true);
-      setLearnError("");
-      setActionError("");
+    try {
+      const learnRes = await fetch("/api/intelligence/learn-path", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ articleId, knowledgeProfile: profileRef.current }),
+      }).then((r) => r.json());
 
-      const [learnRes, actionRes] = await Promise.allSettled([
-        fetch("/api/intelligence/learn-path", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ articleId, knowledgeProfile }),
-        }).then((r) => r.json()),
-        fetch("/api/intelligence/action-planner", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ articleId }),
-        }).then((r) => r.json()),
-      ]);
-
-      if (cancelled) return;
-
-      if (learnRes.status === "fulfilled" && learnRes.value.success) {
-        setLearnData(learnRes.value.data);
+      if (learnRes.success) {
+        setLearnData(learnRes.data);
       } else {
-        setLearnError("Term help is temporarily unavailable.");
+        setLearnError(learnRes.error?.message ?? "Term help is temporarily unavailable.");
       }
+    } catch {
+      setLearnError("Term help is temporarily unavailable.");
+    } finally {
       setLearnLoading(false);
-
-      if (actionRes.status === "fulfilled" && actionRes.value.success) {
-        setActionData(actionRes.value.data);
-      } else {
-        setActionError("Action check is temporarily unavailable.");
-      }
-      setActionLoading(false);
     }
 
-    loadGuide();
-    return () => {
-      cancelled = true;
-    };
-    // Load once per article; profile is read at fetch time only.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    try {
+      const actionRes = await fetch("/api/intelligence/action-planner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ articleId }),
+      }).then((r) => r.json());
+
+      if (actionRes.success) {
+        setActionData(actionRes.data);
+      } else {
+        setActionError(actionRes.error?.message ?? "Action check is temporarily unavailable.");
+      }
+    } catch {
+      setActionError("Action check is temporarily unavailable.");
+    } finally {
+      setActionLoading(false);
+    }
   }, [articleId, hydrated]);
+
+  useEffect(() => {
+    loadGuide();
+  }, [loadGuide]);
 
   const gaps = learnData?.knowledgeGaps ?? [];
   const needsAction =
@@ -240,7 +244,14 @@ export function ReadingGuide({ articleId, sourceUrl }) {
           {learnLoading ? (
             <IntelligenceSkeleton message="Finding terms you may want explained..." />
           ) : null}
-          {learnError ? <p className="text-sm text-amber-700">{learnError}</p> : null}
+          {learnError ? (
+            <div className="rounded-lg border border-amber-300/50 bg-amber-50/80 p-4 dark:bg-amber-950/20">
+              <p className="text-sm text-amber-800 dark:text-amber-200">{learnError}</p>
+              <button type="button" onClick={loadGuide} className="mt-2 text-sm font-medium text-[hsl(var(--accent))]">
+                Try again
+              </button>
+            </div>
+          ) : null}
 
           {!learnLoading && !learnError && gaps.length === 0 ? (
             <div className="flex items-start gap-3 rounded-lg border border-emerald-200/70 bg-emerald-50/50 p-4 dark:border-emerald-900 dark:bg-emerald-950/20">
@@ -293,7 +304,14 @@ export function ReadingGuide({ articleId, sourceUrl }) {
           {actionLoading ? (
             <IntelligenceSkeleton message="Checking whether this story asks anything of you..." />
           ) : null}
-          {actionError ? <p className="text-sm text-amber-700">{actionError}</p> : null}
+          {actionError ? (
+            <div className="rounded-lg border border-amber-300/50 bg-amber-50/80 p-4 dark:bg-amber-950/20">
+              <p className="text-sm text-amber-800 dark:text-amber-200">{actionError}</p>
+              <button type="button" onClick={loadGuide} className="mt-2 text-sm font-medium text-[hsl(var(--accent))]">
+                Try again
+              </button>
+            </div>
+          ) : null}
 
           {!actionLoading && !actionError && !needsAction ? (
             <div className="flex items-start gap-3 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--surface))] p-4">

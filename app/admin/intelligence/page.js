@@ -185,6 +185,12 @@ export default function AdminIntelligencePage() {
         </section>
       ) : null}
 
+      {data && !ap && !lp && !loading ? (
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-sm text-white/60">
+          No cached intelligence for this article yet. Click <strong className="text-white">Run fresh analysis</strong> to generate it.
+        </section>
+      ) : null}
+
       {lp ? (
         <section className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <h2 className="font-serif text-xl font-semibold text-white">Step 1 — Key terms</h2>

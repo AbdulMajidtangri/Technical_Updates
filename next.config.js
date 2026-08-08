@@ -6,6 +6,15 @@ const nextConfig = {
       { protocol: "http", hostname: "**" },
     ],
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = {
+        pollIntervalMs: 1000,
+        aggregateTimeout: 300,
+      };
+    }
+    return config;
+  },
 };
 
 module.exports = nextConfig;

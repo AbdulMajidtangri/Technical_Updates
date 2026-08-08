@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { KeyRound, ShieldCheck } from "lucide-react";
 import { useAdminSecret } from "@/hooks/useAdminSecret";
 import { Button } from "@/components/ui/Button";
 
+const SECRET_KEY = "techpulse-cron-secret";
+
 export function AdminGate() {
   const { unlock } = useAdminSecret();
   const [key, setKey] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem(SECRET_KEY);
+    if (saved) setKey(saved);
+  }, []);
 
   function handleSubmit(e) {
     e.preventDefault();

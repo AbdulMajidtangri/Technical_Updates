@@ -43,15 +43,25 @@ const STEPS = [
   },
 ];
 
-function summarizeResult(data) {
+function summarizeResult(data, stepId) {
   if (!data || typeof data !== "object") return "Completed successfully.";
-  const parts = [];
-  if (data.collected != null) parts.push(`${data.collected} collected`);
-  if (data.processed != null) parts.push(`${data.processed} processed`);
-  if (data.newArticles != null) parts.push(`${data.newArticles} new`);
-  if (data.skipped != null) parts.push(`${data.skipped} skipped`);
-  if (data.total != null) parts.push(`${data.total} total`);
-  return parts.length ? parts.join(" · ") : "Completed successfully.";
+
+  if (stepId === "collect") {
+    return `${data.newArticles ?? 0} new articles · ${data.duplicates ?? 0} duplicates · ${data.feedsProcessed ?? 0} feeds`;
+  }
+
+  if (stepId === "process") {
+    const stats = data.stats ?? data;
+    return `${stats.succeeded ?? 0} analyzed · ${stats.failed ?? 0} failed · ${stats.remaining ?? 0} still pending`;
+  }
+
+  if (stepId === "sync") {
+    const c = data.collect ?? {};
+    const p = data.process ?? {};
+    return `${c.newArticles ?? 0} new collected · ${p.succeeded ?? 0} AI analyzed · ${p.remaining ?? 0} pending`;
+  }
+
+  return "Completed successfully.";
 }
 
 export default function AdminNewsPage() {
@@ -77,7 +87,7 @@ export default function AdminNewsPage() {
     pushLog("info", `Starting ${step.title.toLowerCase()}...`);
     try {
       const data = await callProtectedApi(step.path, secret.trim());
-      pushLog("success", `${step.title}: ${summarizeResult(data)}`);
+      pushLog("success", `${step.title}: ${summarizeResult(data, step.id)}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
       setError(msg);
