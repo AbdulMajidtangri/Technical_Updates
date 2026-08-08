@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { ActionPlannerPanel } from "./ActionPlannerPanel";
+import { LearnPathPanel } from "./LearnPathPanel";
 import { UnderstandPanel } from "./UnderstandPanel";
 import { ImpactPanel } from "./ImpactPanel";
 import { ConnectionsPanel } from "./ConnectionsPanel";
@@ -29,6 +31,12 @@ export function ArticleIntelligence({ article }) {
 
   return (
     <div className="space-y-4">
+      <ActionPlannerPanel
+        articleId={article.id}
+        sourceUrl={article.articleUrl}
+        sourceName={article.sourceName}
+      />
+      <LearnPathPanel articleId={article.id} />
       <UnderstandPanel articleId={article.id} preview={preview} />
       <ImpactPanel articleId={article.id} />
       <ConnectionsPanel articleId={article.id} />

@@ -12,6 +12,7 @@ const NAV = [
   { href: "/#briefing", label: "Briefing" },
   { href: "/#latest", label: "Latest" },
   { href: "/stories", label: "Stories" },
+  { href: "/knowledge", label: "Knowledge" },
   { href: "/categories", label: "Categories" },
   { href: "/saved", label: "Saved" },
   { href: "/search", label: "Search" },
