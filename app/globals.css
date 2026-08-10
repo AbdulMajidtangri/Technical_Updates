@@ -33,11 +33,40 @@
 
   * { box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    font-size: 100%;
+  }
 
   body {
     @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased;
     font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  html.high-contrast {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 20%;
+    --border: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --accent: 220 100% 35%;
+    --accent-foreground: 0 0% 100%;
+    --surface: 0 0% 96%;
+  }
+
+  html.high-contrast.dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 88%;
+    --border: 0 0% 100%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+    --accent: 210 100% 65%;
+    --accent-foreground: 0 0% 0%;
+    --surface: 0 0% 8%;
   }
 
   h1, h2, h3, h4 {

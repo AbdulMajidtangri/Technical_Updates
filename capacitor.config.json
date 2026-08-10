@@ -1,0 +1,12 @@
+{
+  "appId": "com.techpulse.ai",
+  "appName": "TechPulse AI",
+  "webDir": "public",
+  "server": {
+    "url": "https://YOUR_DEPLOYED_URL.vercel.app",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

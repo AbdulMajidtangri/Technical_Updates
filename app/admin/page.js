@@ -17,13 +17,17 @@ function formatWhen(value) {
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState(null);
+  const [feedStats, setFeedStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/stats")
-      .then((r) => r.json())
-      .then((j) => {
-        if (j.success) setStats(j.data);
+    Promise.all([
+      fetch("/api/stats").then((r) => r.json()),
+      fetch("/api/feeds").then((r) => r.json()),
+    ])
+      .then(([statsRes, feedsRes]) => {
+        if (statsRes.success) setStats(statsRes.data);
+        if (feedsRes.success) setFeedStats(feedsRes.data.stats);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -70,6 +74,28 @@ export default function AdminDashboardPage() {
           hint="Stories scored 75+ on importance"
         />
       </div>
+
+      {feedStats ? (
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <h2 className="font-serif text-lg font-semibold text-white">RSS feed catalog</h2>
+          <p className="mt-1 text-sm text-white/50">
+            {feedStats.enabled} active feeds across {feedStats.categories} categories
+          </p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {Object.entries(feedStats.byCategory ?? {})
+              .sort((a, b) => b[1] - a[1])
+              .map(([cat, count]) => (
+                <div key={cat} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2 text-sm">
+                  <span className="text-white/80">{cat}</span>
+                  <span className="tabular-nums text-white/45">{count}</span>
+                </div>
+              ))}
+          </div>
+          <p className="mt-4 text-xs text-white/40">
+            After adding feeds, run <strong className="text-white/70">News pipeline → Full sync</strong> (may take a few minutes).
+          </p>
+        </section>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 lg:col-span-2">

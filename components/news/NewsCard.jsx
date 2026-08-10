@@ -93,7 +93,7 @@ function CardFooter({ article, saved, onToggleSave, onMarkRead }) {
   );
 }
 
-export function NewsCard({ article, variant = "default", featured = false, showCategory = true }) {
+export function NewsCard({ article, variant = "default", featured = false, showCategory = true, offlineLinks = false }) {
   const { isSaved, toggleSaved, hydrated: savedReady } = useSavedArticles();
   const { isRead, markRead, hydrated: readReady } = useReadArticles();
 
@@ -130,7 +130,12 @@ export function NewsCard({ article, variant = "default", featured = false, showC
               <Link href={`/news/${article.slug}`} prefetch className="text-xs font-medium text-[hsl(var(--accent))] hover:opacity-80">
                 Read more
               </Link>
-              <CardActions article={article} saved={saved} onToggleSave={() => toggleSaved(article.id)} onMarkRead={mark} />
+              {offlineLinks && article.id ? (
+                <Link href={`/saved/read/${article.id}`} className="text-xs font-medium text-[hsl(var(--foreground))] hover:opacity-80">
+                  Read offline
+                </Link>
+              ) : null}
+              <CardActions article={article} saved={saved} onToggleSave={() => toggleSaved(article.id, article)} onMarkRead={mark} />
             </div>
           </div>
         </div>
@@ -163,7 +168,7 @@ export function NewsCard({ article, variant = "default", featured = false, showC
             </Link>
           </h3>
           <AiSummary article={article} />
-          <CardFooter article={article} saved={saved} onToggleSave={() => toggleSaved(article.id)} onMarkRead={mark} />
+          <CardFooter article={article} saved={saved} onToggleSave={() => toggleSaved(article.id, article)} onMarkRead={mark} />
         </div>
       </article>
     );
@@ -195,7 +200,7 @@ export function NewsCard({ article, variant = "default", featured = false, showC
           </Link>
         </h3>
         {!isCompact ? <AiSummary article={article} /> : null}
-        <CardFooter article={article} saved={saved} onToggleSave={() => toggleSaved(article.id)} onMarkRead={mark} />
+        <CardFooter article={article} saved={saved} onToggleSave={() => toggleSaved(article.id, article)} onMarkRead={mark} />
       </div>
     </article>
   );

@@ -34,3 +34,8 @@ coverage/
 
 # Vercel
 .vercel
+
+# Capacitor / Android
+android/
+ios/
+.capacitor/
