@@ -40,8 +40,15 @@ export function useAdminSecret() {
     [saveSecret, secret],
   );
 
-  const lock = useCallback(() => {
+  const lock = useCallback(async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST", credentials: "same-origin" });
+    } catch {
+      // ignore network errors during lock
+    }
     sessionStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(SECRET_KEY);
+    setSecretState("");
     setUnlocked(false);
   }, []);
 

@@ -38,10 +38,13 @@ export async function GET(request) {
   try {
     await connectDB();
     const { searchParams } = new URL(request.url);
-    const page = Math.max(1, Number(searchParams.get("page") ?? 1));
-    const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit") ?? 20)));
+    const page = clampNumber(searchParams.get("page"), 1, 10_000, 1);
+    const limit = clampNumber(searchParams.get("limit"), 1, LIMITS.NEWS_PAGE_LIMIT_MAX, 20);
     const filter = buildNewsFilter(searchParams);
-    const docs = await Article.find(filter).lean();
+    const docs = await Article.find(filter)
+      .sort({ publishedAt: -1, collectedAt: -1 })
+      .limit(LIMITS.NEWS_FETCH_MAX)
+      .lean();
     const ranked = rankArticles(docs);
     const total = ranked.length;
     const start = (page - 1) * limit;
