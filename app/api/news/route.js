@@ -3,6 +3,8 @@ import Article from "@/models/Article.js";
 import { jsonSuccess, jsonFromError } from "@/lib/api/response.js";
 import { rankArticles } from "@/lib/ranking/rankArticles.js";
 import { toArticleResponse } from "@/lib/api/toArticleResponse.js";
+import { clampNumber } from "@/lib/security/validation.js";
+import { LIMITS } from "@/lib/security/constants.js";
 
 function buildNewsFilter(searchParams) {
   const filter = { isDuplicate: { $ne: true } };
