@@ -19,9 +19,11 @@ const NAV = [
   { href: "/admin/intelligence", label: "Intelligence", icon: Brain },
 ];
 
-export function AdminShell({ children }) {
+export function AdminShell({ children, serverAuthenticated = false }) {
   const pathname = usePathname();
   const { unlocked, hydrated, lock } = useAdminSecret();
+
+  const authenticated = serverAuthenticated || unlocked;
 
   if (!hydrated) {
     return (
@@ -31,7 +33,7 @@ export function AdminShell({ children }) {
     );
   }
 
-  if (!unlocked) {
+  if (!authenticated) {
     return <AdminGate />;
   }
 

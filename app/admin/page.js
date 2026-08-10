@@ -22,8 +22,8 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/stats").then((r) => r.json()),
-      fetch("/api/feeds").then((r) => r.json()),
+      fetch("/api/stats", { credentials: "same-origin" }).then((r) => r.json()),
+      fetch("/api/feeds", { credentials: "same-origin" }).then((r) => r.json()),
     ])
       .then(([statsRes, feedsRes]) => {
         if (statsRes.success) setStats(statsRes.data);

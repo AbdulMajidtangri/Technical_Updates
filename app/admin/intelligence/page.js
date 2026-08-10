@@ -48,11 +48,13 @@ export default function AdminIntelligencePage() {
           fetch("/api/intelligence/action-planner", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
             body: JSON.stringify({ articleId: targetId, force: true }),
           }).then((r) => r.json()),
           fetch("/api/intelligence/learn-path", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
             body: JSON.stringify({ articleId: targetId, force: true, knowledgeProfile: { concepts: {} } }),
           }).then((r) => r.json()),
         ]);

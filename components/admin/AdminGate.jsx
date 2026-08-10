@@ -12,20 +12,44 @@ export function AdminGate() {
   const { unlock } = useAdminSecret();
   const [key, setKey] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(SECRET_KEY);
     if (saved) setKey(saved);
   }, []);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!key.trim()) {
       setError("Enter your operations key to continue.");
       return;
     }
-    const ok = unlock(key);
-    if (!ok) setError("Could not unlock. Check your key and try again.");
+
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/admin/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ secret: key.trim() }),
+      });
+      const json = await res.json();
+
+      if (!json.success) {
+        setError(json.error?.message ?? "Invalid operations key.");
+        return;
+      }
+
+      unlock(key);
+      window.location.reload();
+    } catch {
+      setError("Could not verify key. Check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -58,6 +82,7 @@ export function AdminGate() {
                   setError("");
                 }}
                 placeholder="Same as CRON_SECRET in .env.local"
+                autoComplete="current-password"
                 className="w-full rounded-lg border border-white/10 bg-[hsl(222_47%_6%)] py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-white/30 focus:border-[hsl(var(--accent))] focus:outline-none"
               />
             </div>
@@ -65,15 +90,15 @@ export function AdminGate() {
 
           {error ? <p className="mt-3 text-sm text-red-400">{error}</p> : null}
 
-          <Button type="submit" variant="accent" className="mt-5 w-full">
-            Unlock control center
+          <Button type="submit" variant="accent" className="mt-5 w-full" disabled={submitting}>
+            {submitting ? "Verifying…" : "Unlock control center"}
           </Button>
 
           <div className="mt-5 flex items-start gap-2 rounded-lg bg-white/5 p-3 text-xs leading-relaxed text-white/55">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
             <p>
-              This key is stored only in your browser session. It is never shown on the public site
-              or shared with readers.
+              Your key is verified on the server and stored in a secure HttpOnly session cookie.
+              The key in session storage is only used for protected sync API calls from this browser.
             </p>
           </div>
         </form>
