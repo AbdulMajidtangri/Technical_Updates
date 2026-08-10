@@ -6,6 +6,7 @@ export function NewsGrid({
   layout = 'grid',
   showCategory = true,
   variant = 'default',
+  offlineLinks = false,
 }) {
   if (!articles.length) return null;
 
@@ -18,6 +19,7 @@ export function NewsGrid({
             article={article}
             variant="list"
             showCategory={showCategory}
+            offlineLinks={offlineLinks}
           />
         ))}
       </div>

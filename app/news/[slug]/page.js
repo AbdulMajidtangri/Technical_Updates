@@ -4,6 +4,7 @@ import { getArticleBySlugOrId } from '@/lib/data/articles.js';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { ArticleHero } from '@/components/news/ArticleHero';
 import { ArticleDetailActions } from '@/components/news/ArticleDetailActions';
+import { ReadingGuide } from '@/components/intelligence/ReadingGuide';
 import { ArticleIntelligence } from '@/components/intelligence/ArticleIntelligence';
 import { Badge } from '@/components/ui/Badge';
 
@@ -88,12 +89,14 @@ export default async function ArticlePage({ params }) {
         </section>
       ) : null}
 
+      <ReadingGuide articleId={article.id} sourceUrl={article.articleUrl} />
+
       <div className="space-y-4">
         <div className="border-b border-[hsl(var(--border))] pb-3">
-          <p className="section-label">Optional analysis</p>
-          <h2 className="mt-1 font-serif text-xl font-semibold">Explore further</h2>
+          <p className="section-label">Go deeper</p>
+          <h2 className="mt-1 font-serif text-xl font-semibold">More analysis</h2>
           <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-            Deeper intelligence on demand — impact, connections, learning, and scenarios.
+            Optional panels — open only what you need: impact, connections, timeline, and scenarios.
           </p>
         </div>
         <ArticleIntelligence article={article} />

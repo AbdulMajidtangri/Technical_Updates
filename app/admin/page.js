@@ -1,133 +1,228 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { PageContainer } from '@/components/layout/PageContainer';
-import { Button } from '@/components/ui/Button';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Activity, ArrowRight, CheckCircle2, Clock3, Database, Sparkles } from "lucide-react";
+import { AdminStatCard } from "@/components/admin/AdminStatCard";
+import { Button } from "@/components/ui/Button";
 
-const SECRET_KEY = 'techpulse-cron-secret';
-
-async function callApi(path, secret) {
-  const res = await fetch(path, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-cron-secret': secret,
-    },
-  });
-  const json = await res.json();
-  if (!json.success) throw new Error(json.error?.message ?? json.error ?? 'Request failed');
-  return json.data;
+function formatWhen(value) {
+  if (!value) return "Never";
+  try {
+    return new Date(value).toLocaleString();
+  } catch {
+    return "Unknown";
+  }
 }
 
-export default function AdminPage() {
-  const [secret, setSecret] = useState('');
+export default function AdminDashboardPage() {
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState('');
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState('');
+  const [feedStats, setFeedStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = sessionStorage.getItem(SECRET_KEY);
-    if (saved) setSecret(saved);
-    fetch('/api/stats')
-      .then((r) => r.json())
-      .then((j) => j.success && setStats(j.data))
-      .catch(() => {});
+    Promise.all([
+      fetch("/api/stats", { credentials: "same-origin" }).then((r) => r.json()),
+      fetch("/api/feeds", { credentials: "same-origin" }).then((r) => r.json()),
+    ])
+      .then(([statsRes, feedsRes]) => {
+        if (statsRes.success) setStats(statsRes.data);
+        if (feedsRes.success) setFeedStats(feedsRes.data.stats);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  function saveSecret() {
-    sessionStorage.setItem(SECRET_KEY, secret);
-    setError('');
-  }
-
-  async function run(action, path) {
-    if (!secret.trim()) {
-      setError('Enter your CRON_SECRET first (same value as in .env.local)');
-      return;
-    }
-    sessionStorage.setItem(SECRET_KEY, secret);
-    setLoading(action);
-    setError('');
-    setResult(null);
-    try {
-      const data = await callApi(path, secret.trim());
-      setResult(data);
-      const s = await fetch('/api/stats').then((r) => r.json());
-      if (s.success) setStats(s.data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
-    } finally {
-      setLoading('');
-    }
-  }
+  const healthy = stats && stats.totalArticles > 0;
+  const analyzedPct =
+    stats && stats.totalArticles
+      ? Math.round((stats.articlesAnalyzed / stats.totalArticles) * 100)
+      : 0;
 
   return (
-    <PageContainer className="py-10">
-      <h1 className="text-3xl font-bold">Developer Controls</h1>
-      <p className="mt-2 text-[hsl(var(--muted-foreground))]">
-        Fetch RSS news, run AI analysis, and populate your dashboard.
-      </p>
+    <div className="mx-auto max-w-6xl space-y-8">
+      <header>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-[hsl(var(--accent))]">
+          Overview
+        </p>
+        <h1 className="mt-2 font-serif text-3xl font-semibold text-white">System at a glance</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/55">
+          Everything you need to run TechPulse — health, content volume, and quick paths to sync news
+          or inspect intelligence.
+        </p>
+      </header>
 
-      {stats ? (
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {[
-            ['Total articles', stats.totalArticles],
-            ['AI analyzed', stats.articlesAnalyzed],
-            ['Today', stats.articlesToday],
-            ['Important', stats.importantArticles],
-          ].map(([label, value]) => (
-            <div key={label} className="rounded-xl border border-[hsl(var(--border))] p-4">
-              <p className="text-2xl font-bold">{value ?? 0}</p>
-              <p className="text-xs text-[hsl(var(--muted-foreground))]">{label}</p>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <AdminStatCard
+          label="Articles in library"
+          value={loading ? "…" : stats?.totalArticles ?? 0}
+          hint="All non-duplicate stories stored in MongoDB"
+          tone={healthy ? "good" : "warn"}
+        />
+        <AdminStatCard
+          label="AI analyzed"
+          value={loading ? "…" : `${stats?.articlesAnalyzed ?? 0} (${analyzedPct}%)`}
+          hint="Stories with OpenAI summaries and scores"
+        />
+        <AdminStatCard
+          label="Collected today"
+          value={loading ? "…" : stats?.articlesToday ?? 0}
+          hint="Published or collected since midnight UTC"
+        />
+        <AdminStatCard
+          label="High importance"
+          value={loading ? "…" : stats?.importantArticles ?? 0}
+          hint="Stories scored 75+ on importance"
+        />
+      </div>
+
+      {feedStats ? (
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <h2 className="font-serif text-lg font-semibold text-white">RSS feed catalog</h2>
+          <p className="mt-1 text-sm text-white/50">
+            {feedStats.enabled} active feeds across {feedStats.categories} categories
+          </p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {Object.entries(feedStats.byCategory ?? {})
+              .sort((a, b) => b[1] - a[1])
+              .map(([cat, count]) => (
+                <div key={cat} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2 text-sm">
+                  <span className="text-white/80">{cat}</span>
+                  <span className="tabular-nums text-white/45">{count}</span>
+                </div>
+              ))}
+          </div>
+          <p className="mt-4 text-xs text-white/40">
+            After adding feeds, run <strong className="text-white/70">News pipeline → Full sync</strong> (may take a few minutes).
+          </p>
+        </section>
+      ) : null}
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 lg:col-span-2">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="font-serif text-xl font-semibold text-white">Quick actions</h2>
+              <p className="mt-1 text-sm text-white/50">Most common tasks, one click away.</p>
             </div>
-          ))}
+            <Activity className="h-5 w-5 text-[hsl(var(--accent))]" />
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <Link
+              href="/admin/news"
+              className="group rounded-xl border border-white/10 bg-[hsl(222_47%_7%)] p-4 transition hover:border-[hsl(var(--accent))]/40"
+            >
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-white">Sync news feed</p>
+                <ArrowRight className="h-4 w-4 text-white/40 transition group-hover:translate-x-0.5 group-hover:text-white" />
+              </div>
+              <p className="mt-2 text-sm text-white/50">
+                Collect RSS, run AI analysis, and refresh the public homepage.
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/intelligence"
+              className="group rounded-xl border border-white/10 bg-[hsl(222_47%_7%)] p-4 transition hover:border-[hsl(var(--accent))]/40"
+            >
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-white">Test reading guide</p>
+                <ArrowRight className="h-4 w-4 text-white/40 transition group-hover:translate-x-0.5 group-hover:text-white" />
+              </div>
+              <p className="mt-2 text-sm text-white/50">
+                Inspect ActionPlanner and LearnPath results on real articles.
+              </p>
+            </Link>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/admin/news">
+              <Button type="button" variant="accent">
+                Open news pipeline
+              </Button>
+            </Link>
+            <Link href="/">
+              <Button type="button" variant="secondary" className="border-white/15 bg-transparent text-white hover:bg-white/5">
+                Preview public site
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <h2 className="font-serif text-xl font-semibold text-white">System status</h2>
+          <ul className="mt-5 space-y-4 text-sm">
+            <li className="flex items-start gap-3">
+              <Database className="mt-0.5 h-4 w-4 text-[hsl(var(--accent))]" />
+              <div>
+                <p className="font-medium text-white">Database</p>
+                <p className="text-white/50">
+                  {loading ? "Checking..." : healthy ? "Connected — articles found" : "Empty — run your first sync"}
+                </p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <Sparkles className="mt-0.5 h-4 w-4 text-[hsl(var(--accent))]" />
+              <div>
+                <p className="font-medium text-white">AI processing</p>
+                <p className="text-white/50">{analyzedPct}% of library analyzed</p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <Clock3 className="mt-0.5 h-4 w-4 text-[hsl(var(--accent))]" />
+              <div>
+                <p className="font-medium text-white">Last update</p>
+                <p className="text-white/50">{formatWhen(stats?.lastUpdated)}</p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-400" />
+              <div>
+                <p className="font-medium text-white">Public site</p>
+                <p className="text-white/50">Readers only see news — never this panel</p>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      {stats?.categories?.length ? (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+            <h2 className="font-serif text-lg font-semibold text-white">Top categories</h2>
+            <ul className="mt-4 space-y-2">
+              {stats.categories.slice(0, 6).map((row) => (
+                <li key={row.category} className="flex items-center justify-between text-sm">
+                  <span className="text-white/80">{row.category}</span>
+                  <span className="tabular-nums text-white/45">{row.count}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+            <h2 className="font-serif text-lg font-semibold text-white">Top sources</h2>
+            <ul className="mt-4 space-y-2">
+              {(stats.sources ?? []).slice(0, 6).map((row) => (
+                <li key={row.source} className="flex items-center justify-between text-sm">
+                  <span className="truncate text-white/80">{row.source}</span>
+                  <span className="tabular-nums text-white/45">{row.count}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
       ) : null}
 
-      <div className="mt-8 max-w-lg space-y-4 rounded-xl border border-[hsl(var(--border))] p-6">
-        <label className="block text-sm font-medium">
-          CRON Secret
-          <input
-            type="password"
-            value={secret}
-            onChange={(e) => setSecret(e.target.value)}
-            placeholder="Same as CRON_SECRET in .env.local"
-            className="mt-1 w-full rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-2 text-sm"
-          />
-        </label>
-        <Button type="button" variant="outline" onClick={saveSecret}>
-          Save secret
-        </Button>
-
-        <div className="flex flex-wrap gap-3 pt-2">
-          <Button type="button" disabled={!!loading} onClick={() => run('collect', '/api/news/collect')}>
-            {loading === 'collect' ? 'Collecting...' : '1. Collect RSS'}
-          </Button>
-          <Button type="button" disabled={!!loading} onClick={() => run('process', '/api/news/process')}>
-            {loading === 'process' ? 'Processing...' : '2. Process AI'}
-          </Button>
-          <Button type="button" disabled={!!loading} onClick={() => run('sync', '/api/news/sync')}>
-            {loading === 'sync' ? 'Syncing...' : 'Sync (both)'}
-          </Button>
-        </div>
-
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        {result ? (
-          <pre className="max-h-64 overflow-auto rounded-lg bg-[hsl(var(--muted))] p-3 text-xs">
-            {JSON.stringify(result, null, 2)}
-          </pre>
-        ) : null}
-      </div>
-
-      <div className="mt-8 rounded-xl border border-brand-200 bg-brand-50 p-4 text-sm dark:border-brand-800 dark:bg-brand-950">
-        <p className="font-medium">First-time setup</p>
-        <ol className="mt-2 list-decimal space-y-1 pl-5 text-[hsl(var(--muted-foreground))]">
-          <li>Make sure MongoDB is running and .env.local is configured</li>
-          <li>Enter CRON_SECRET (yours is set in .env.local)</li>
-          <li>Click <strong>Sync (both)</strong> — wait 1–2 minutes</li>
-          <li>Go back to Home — news should appear</li>
+      <section className="rounded-2xl border border-[hsl(var(--accent))]/25 bg-[hsl(var(--accent))]/10 p-6">
+        <h2 className="font-serif text-lg font-semibold text-white">First-time setup</h2>
+        <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-relaxed text-white/70">
+          <li>Ensure MongoDB is running and `.env.local` has `MONGODB_URI`, `OPENAI_API_KEY`, and `CRON_SECRET`.</li>
+          <li>Go to <strong className="text-white">News pipeline</strong> and run <strong className="text-white">Full sync</strong>.</li>
+          <li>Wait 1–2 minutes, then open the public homepage — stories should appear.</li>
+          <li>Open any article to verify the automatic <strong className="text-white">Reading guide</strong>.</li>
         </ol>
-      </div>
-    </PageContainer>
+      </section>
+    </div>
   );
 }

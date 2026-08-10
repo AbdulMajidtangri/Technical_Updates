@@ -1,0 +1,17 @@
+{
+  "name": "TechPulse AI",
+  "short_name": "TechPulse",
+  "description": "News intelligence with offline reading and AI summaries",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0c7ea5",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

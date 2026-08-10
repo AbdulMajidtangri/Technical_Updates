@@ -1,8 +1,8 @@
 import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { ReadingSettingsProvider } from "@/components/providers/ReadingSettingsProvider";
 import { HashScrollHandler } from "@/components/navigation/HashScrollHandler";
 
 const inter = Inter({
@@ -23,6 +23,11 @@ export const metadata = {
     template: "%s | TechPulse AI",
   },
   description: "Professional technology news intelligence. Ranked, analyzed, and explained.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "TechPulse AI",
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -30,12 +35,10 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${sourceSerif.variable} font-sans min-h-screen`}>
         <ThemeProvider>
-          <HashScrollHandler />
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          <ReadingSettingsProvider>
+            <HashScrollHandler />
+            <SiteChrome>{children}</SiteChrome>
+          </ReadingSettingsProvider>
         </ThemeProvider>
       </body>
     </html>

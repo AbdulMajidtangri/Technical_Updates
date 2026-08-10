@@ -5,7 +5,6 @@ import { UnderstandPanel } from "./UnderstandPanel";
 import { ImpactPanel } from "./ImpactPanel";
 import { ConnectionsPanel } from "./ConnectionsPanel";
 import { TimelinePanel } from "./TimelinePanel";
-import { LearningPanel } from "./LearningPanel";
 import { ScenarioPanel } from "./ScenarioPanel";
 import { useInterestProfile } from "@/hooks/useInterestProfile";
 
@@ -33,7 +32,6 @@ export function ArticleIntelligence({ article }) {
       <ImpactPanel articleId={article.id} />
       <ConnectionsPanel articleId={article.id} />
       <TimelinePanel articleId={article.id} />
-      <LearningPanel articleId={article.id} />
       <ScenarioPanel articleId={article.id} articleTitle={article.title} />
     </div>
   );

@@ -1,13 +1,17 @@
 import { connectDB } from "@/lib/db.js";
 import Article from "@/models/Article.js";
 import { jsonSuccess, jsonFromError } from "@/lib/api/response.js";
+import { unauthorizedPrivilegedResponse } from "@/lib/auth.js";
 
 function startOfTodayUtc() {
   const now = new Date();
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
-export async function GET() {
+export async function GET(request) {
+  const denied = unauthorizedPrivilegedResponse(request);
+  if (denied) return denied;
+
   try {
     await connectDB();
     const todayStart = startOfTodayUtc();
@@ -30,6 +34,6 @@ export async function GET() {
       lastUpdated: latest?.updatedAt ?? null,
     });
   } catch (error) {
-    return jsonFromError(error);
+    return jsonFromError(error, { fallbackMessage: "Stats unavailable" });
   }
 }
