@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { normalizeArticle, normalizeTitle } from "../lib/rss/normalizeArticle.js";
+import { normalizeArticle, normalizeTitle, parsePublishedDate } from "../lib/rss/normalizeArticle.js";
 
 describe("normalizeArticle", () => {
   it("normalizes RSS item with required fields", () => {
@@ -17,5 +17,15 @@ describe("normalizeArticle", () => {
 
   it("normalizes titles consistently", () => {
     assert.equal(normalizeTitle("OpenAI: New Model!"), "openai new model");
+  });
+
+  it("returns null for invalid publish dates instead of throwing", () => {
+    const result = normalizeArticle(
+      { title: "Bad date article", link: "https://example.com/bad", pubDate: "not-a-real-date" },
+      { name: "Test Feed" },
+    );
+    assert.equal(result.publishedAt, null);
+    assert.equal(parsePublishedDate("garbage"), null);
+    assert.ok(parsePublishedDate("2026-08-04T10:00:00Z") instanceof Date);
   });
 });
