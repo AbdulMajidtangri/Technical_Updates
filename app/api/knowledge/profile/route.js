@@ -1,7 +1,7 @@
 import { jsonSuccess, jsonError, jsonFromError } from "@/lib/api/response.js";
 import { checkApiRateLimit, getApiClientKey } from "@/lib/security/apiRateLimit.js";
 import { DEFAULT_RELATIONSHIPS, getCategoryFamiliarity } from "@/lib/intelligence/learnPath/knowledgeGap.js";
-import { clampNumber, readJsonBody, sanitizeRecord } from "@/lib/security/validation.js";
+import { readJsonBody, sanitizeRecord } from "@/lib/security/validation.js";
 import { LIMITS } from "@/lib/security/constants.js";
 
 export async function POST(request) {
