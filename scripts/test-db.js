@@ -5,6 +5,7 @@
  */
 import fs from "fs";
 import path from "path";
+import dns from "dns";
 import mongoose from "mongoose";
 
 function loadMongoUriFromEnvFile(filePath) {
@@ -54,10 +55,17 @@ function hintForError(error, mode) {
   if (/authentication failed|bad auth|Invalid credentials/i.test(msg)) {
     return "Wrong username or password. Atlas → Database Access → reset password → update .env.local.";
   }
-  if (/ECONNREFUSED|127\.0\.0\.1|localhost/i.test(msg)) {
-    return "Still pointing at local MongoDB. Comment the local line and use your Atlas mongodb+srv URI.";
+  if (/querySrv|ENOTFOUND.*mongodb\.net/i.test(msg)) {
+    return [
+      "DNS cannot resolve Atlas SRV records (common on some Windows/network setups).",
+      "Try: (1) set DNS to 8.8.8.8 or 1.1.1.1, disable VPN, retry;",
+      "(2) Atlas → Connect → Drivers → copy the Standard connection string (mongodb://... not mongodb+srv://) into .env.local.",
+    ].join(" ");
   }
-  if (/timed out|Server selection|ENOTFOUND|querySrv/i.test(msg)) {
+  if (/127\.0\.0\.1|localhost/i.test(msg)) {
+    return "Still pointing at local MongoDB. Comment the local line and use your Atlas URI.";
+  }
+  if (/timed out|Server selection|ECONNREFUSED|ENOTFOUND/i.test(msg)) {
     return "Network blocked or cluster unreachable. Atlas → Network Access → add your IP (or 0.0.0.0/0 for testing).";
   }
   if (/self signed certificate|TLS|SSL/i.test(msg)) {
@@ -86,6 +94,12 @@ if (mode === "placeholder-password") {
 }
 
 try {
+  if (uri.startsWith("mongodb+srv://")) {
+    dns.setServers(
+      (process.env.MONGODB_DNS_SERVERS ?? "8.8.8.8,1.1.1.1").split(",").map((s) => s.trim()).filter(Boolean),
+    );
+  }
+
   await mongoose.connect(uri, {
     serverSelectionTimeoutMS: 20_000,
     socketTimeoutMS: 45_000,
