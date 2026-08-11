@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { KeyRound, ShieldCheck } from "lucide-react";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { BRAND } from "@/lib/config/brand.js";
 import { useAdminSecret } from "@/hooks/useAdminSecret";
 import { Button } from "@/components/ui/Button";
 
@@ -53,12 +55,12 @@ export function AdminGate() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[hsl(222_47%_5%)] px-4">
+    <div className="flex min-h-screen items-center justify-center bg-[hsl(260_18%_5%)] px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[hsl(var(--accent))] text-sm font-bold text-white">
-            TP
-          </span>
+          <div className="flex justify-center">
+            <BrandLogo size="lg" variant="light" />
+          </div>
           <h1 className="mt-4 font-serif text-3xl font-semibold text-white">Control Center</h1>
           <p className="mt-2 text-sm leading-relaxed text-white/60">
             Owner-only area for news sync, system health, and intelligence checks.
@@ -68,7 +70,7 @@ export function AdminGate() {
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-white/10 bg-[hsl(222_47%_8%)] p-6 shadow-2xl"
+          className="rounded-2xl border border-white/10 bg-[hsl(260_16%_8%)] p-6 shadow-2xl"
         >
           <label className="block text-sm font-medium text-white">
             Operations key
@@ -83,7 +85,7 @@ export function AdminGate() {
                 }}
                 placeholder="Same as CRON_SECRET in .env.local"
                 autoComplete="current-password"
-                className="w-full rounded-lg border border-white/10 bg-[hsl(222_47%_6%)] py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-white/30 focus:border-[hsl(var(--accent))] focus:outline-none"
+                className="w-full rounded-lg border border-white/10 bg-[hsl(260_16%_6%)] py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-white/30 focus:border-[hsl(var(--accent))] focus:outline-none"
               />
             </div>
           </label>
@@ -105,7 +107,7 @@ export function AdminGate() {
 
         <p className="mt-6 text-center text-xs text-white/40">
           <Link href="/" className="hover:text-white/70">
-            ← Back to TechPulse
+            ← Back to {BRAND.shortName} Atlas
           </Link>
         </p>
       </div>

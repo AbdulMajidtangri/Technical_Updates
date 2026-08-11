@@ -46,7 +46,7 @@ export default function AdminDashboardPage() {
         </p>
         <h1 className="mt-2 font-serif text-3xl font-semibold text-white">System at a glance</h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/55">
-          Everything you need to run TechPulse — health, content volume, and quick paths to sync news
+          Everything you need to run Inkwell Atlas — health, content volume, and quick paths to sync news
           or inspect intelligence.
         </p>
       </header>

@@ -11,6 +11,8 @@ import {
   Shield,
 } from "lucide-react";
 import { useAdminSecret } from "@/hooks/useAdminSecret";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { AdminGate } from "./AdminGate";
 import { AdminGate } from "./AdminGate";
 
 const NAV = [
@@ -38,19 +40,12 @@ export function AdminShell({ children, serverAuthenticated = false }) {
   }
 
   return (
-    <div className="min-h-screen bg-[hsl(222_47%_5%)] text-[hsl(210_40%_96%)]">
+    <div className="min-h-screen bg-[hsl(260_18%_5%)] text-[hsl(38_22%_94%)]">
       <div className="flex min-h-screen">
-        <aside className="hidden w-64 shrink-0 flex-col border-r border-white/10 bg-[hsl(222_47%_7%)] lg:flex">
+        <aside className="hidden w-64 shrink-0 flex-col border-r border-white/10 bg-[hsl(260_16%_7%)] lg:flex">
           <div className="border-b border-white/10 px-5 py-6">
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[hsl(var(--accent))] text-xs font-bold text-white">
-                TP
-              </span>
-              <div>
-                <p className="font-serif text-base font-semibold">Control Center</p>
-                <p className="text-[10px] uppercase tracking-[0.18em] text-white/50">Owner access</p>
-              </div>
-            </div>
+            <BrandLogo size="sm" variant="light" />
+            <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-white/50">Control Center</p>
           </div>
 
           <nav className="flex-1 space-y-1 p-3" aria-label="Admin">

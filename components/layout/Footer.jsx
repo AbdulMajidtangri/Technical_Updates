@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BRAND } from "@/lib/config/brand.js";
 
 const LINKS = [
   { href: "/", label: "Home" },
@@ -13,9 +14,12 @@ export function Footer() {
     <footer className="mt-auto border-t border-[hsl(var(--border))] bg-[hsl(var(--surface))]">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-3 lg:px-8">
         <div className="lg:col-span-1">
-          <p className="font-serif text-lg font-semibold">TechPulse AI</p>
+          <p className="font-serif text-lg font-semibold">
+            {BRAND.shortName}
+            <span className="text-[hsl(var(--accent))]"> Atlas</span>
+          </p>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
-            A professional news intelligence dashboard for technology, business, and global developments.
+            {BRAND.tagline} Your personal desk for technology, business, and world news — ranked, explained, and ready to read.
           </p>
         </div>
         <div>
@@ -33,12 +37,12 @@ export function Footer() {
         <div>
           <p className="section-label mb-4">About</p>
           <p className="text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
-            Built for calm, professional news reading with AI summaries and a personal reading guide.
+            {BRAND.description}
           </p>
         </div>
       </div>
       <div className="border-t border-[hsl(var(--border))] py-5 text-center text-xs text-[hsl(var(--muted-foreground))]">
-        © {new Date().getFullYear()} TechPulse AI. All rights reserved.
+        © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
       </div>
     </footer>
   );

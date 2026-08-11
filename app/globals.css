@@ -4,31 +4,37 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 222 47% 11%;
-    --muted: 214 32% 94%;
-    --muted-foreground: 215 16% 42%;
-    --border: 214 32% 88%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --accent: 199 89% 38%;
+    /* Warm editorial light — parchment paper + ink + plum accent */
+    --background: 38 28% 97%;
+    --foreground: 258 28% 14%;
+    --muted: 38 18% 92%;
+    --muted-foreground: 258 10% 42%;
+    --border: 38 14% 86%;
+    --card: 40 35% 99%;
+    --card-foreground: 258 28% 14%;
+    --accent: 268 58% 46%;
     --accent-foreground: 0 0% 100%;
-    --surface: 210 25% 96%;
-    --ring: 199 89% 38%;
+    --accent-secondary: 22 88% 50%;
+    --accent-secondary-foreground: 0 0% 100%;
+    --surface: 38 22% 94%;
+    --ring: 268 58% 46%;
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 96%;
-    --muted: 217 33% 14%;
-    --muted-foreground: 215 20% 62%;
-    --border: 217 33% 18%;
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 96%;
-    --accent: 199 80% 48%;
-    --accent-foreground: 222 47% 6%;
-    --surface: 222 47% 10%;
-    --ring: 199 80% 48%;
+    /* Deep ink night — lavender accent + warm copper highlights */
+    --background: 260 18% 7%;
+    --foreground: 38 22% 94%;
+    --muted: 260 14% 14%;
+    --muted-foreground: 260 8% 62%;
+    --border: 260 12% 18%;
+    --card: 260 16% 9%;
+    --card-foreground: 38 22% 94%;
+    --accent: 268 62% 68%;
+    --accent-foreground: 260 18% 7%;
+    --accent-secondary: 28 90% 58%;
+    --accent-secondary-foreground: 260 18% 7%;
+    --surface: 260 14% 11%;
+    --ring: 268 62% 68%;
   }
 
   * { box-sizing: border-box; }
@@ -51,8 +57,10 @@
     --border: 0 0% 0%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 0%;
-    --accent: 220 100% 35%;
+    --accent: 268 80% 35%;
     --accent-foreground: 0 0% 100%;
+    --accent-secondary: 22 100% 40%;
+    --accent-secondary-foreground: 0 0% 100%;
     --surface: 0 0% 96%;
   }
 
@@ -64,8 +72,10 @@
     --border: 0 0% 100%;
     --card: 0 0% 0%;
     --card-foreground: 0 0% 100%;
-    --accent: 210 100% 65%;
+    --accent: 268 70% 75%;
     --accent-foreground: 0 0% 0%;
+    --accent-secondary: 28 100% 65%;
+    --accent-secondary-foreground: 0 0% 0%;
     --surface: 0 0% 8%;
   }
 
@@ -75,6 +85,27 @@
 }
 
 @layer components {
+  .brand-mark {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--accent)) 0%,
+      hsl(var(--accent-secondary)) 100%
+    );
+    box-shadow: 0 2px 8px hsl(var(--accent) / 0.25);
+  }
+
+  .hero-surface {
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 0%, hsl(var(--accent) / 0.09), transparent 55%),
+      radial-gradient(ellipse 60% 50% at 90% 20%, hsl(var(--accent-secondary) / 0.07), transparent 50%),
+      hsl(var(--card));
+  }
+
+  .stat-value {
+    @apply font-serif text-2xl font-semibold tabular-nums;
+    color: hsl(var(--accent));
+  }
+
   .section-label {
     @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-[hsl(var(--accent))];
   }
@@ -88,11 +119,12 @@
   }
 
   .card-premium {
-    @apply rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+    @apply rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))];
+    box-shadow: 0 1px 3px hsl(var(--foreground) / 0.04), 0 4px 12px hsl(var(--accent) / 0.04);
   }
 
   .link-accent {
-    @apply text-[hsl(var(--accent))] transition-colors hover:opacity-80;
+    @apply text-[hsl(var(--accent))] transition-colors hover:text-[hsl(var(--accent-secondary))];
   }
 }
 
