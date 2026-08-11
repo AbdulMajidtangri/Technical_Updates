@@ -13,7 +13,6 @@ import {
 import { useAdminSecret } from "@/hooks/useAdminSecret";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { AdminGate } from "./AdminGate";
-import { AdminGate } from "./AdminGate";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
