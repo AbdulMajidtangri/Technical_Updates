@@ -3,6 +3,9 @@
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { SearchProvider } from "@/components/search/SearchProvider";
+import { RouteProgress } from "@/components/navigation/RouteProgress";
+import { PrefetchRoutes } from "@/components/navigation/PrefetchRoutes";
 
 export function SiteChrome({ children }) {
   const pathname = usePathname();
@@ -13,11 +16,15 @@ export function SiteChrome({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </div>
+    <SearchProvider>
+      <RouteProgress />
+      <PrefetchRoutes />
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
+      </div>
+    </SearchProvider>
   );
 }
 
