@@ -15,6 +15,11 @@ module.exports = {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         serif: ["var(--font-serif)", "Georgia", "serif"],
       },
+      letterSpacing: {
+        editorial: "-0.025em",
+        ui: "-0.012em",
+        caps: "0.2em",
+      },
       boxShadow: {
         card: "0 1px 3px 0 hsl(260 20% 10% / 0.05), 0 8px 20px -6px hsl(265 60% 40% / 0.08)",
         elevated: "0 8px 30px -6px hsl(265 60% 40% / 0.15), 0 4px 12px -4px hsl(260 20% 10% / 0.08)",

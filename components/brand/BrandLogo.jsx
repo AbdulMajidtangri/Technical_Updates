@@ -19,7 +19,7 @@ export function BrandLogo({ size = "md", showName = true, className = "", varian
         {BRAND.monogram}
       </span>
       {showName ? (
-        <span className={`font-serif font-semibold tracking-tight ${nameClass} ${s.name}`}>
+        <span className={`font-serif font-semibold tracking-editorial ${nameClass} ${s.name}`}>
           {BRAND.shortName}
           <span className="text-[hsl(var(--accent))]"> Atlas</span>
         </span>

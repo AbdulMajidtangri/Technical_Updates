@@ -80,7 +80,7 @@ export default async function HomePage() {
             <div className="max-w-2xl">
               <span className="eyebrow-badge">{BRAND.name}</span>
               <p className="section-label mt-5">{formatToday()}</p>
-              <h1 className="mt-3 font-serif text-[2rem] font-normal leading-[1.12] sm:text-4xl lg:text-[3.25rem]">
+              <h1 className="mt-3 font-serif text-[2rem] font-semibold leading-[1.08] sm:text-4xl lg:text-[3.25rem]">
                 Don&apos;t just read the news.{" "}
                 <span className="text-gradient">Understand what it means.</span>
               </h1>

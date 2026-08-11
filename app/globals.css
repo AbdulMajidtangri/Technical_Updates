@@ -45,12 +45,32 @@
   }
 
   body {
-    @apply text-[hsl(var(--foreground))] antialiased;
+    @apply font-sans text-[hsl(var(--foreground))] antialiased;
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: -0.012em;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   }
 
   h1, h2, h3, h4 {
-    @apply font-serif tracking-tight text-[hsl(var(--foreground))];
+    @apply font-serif text-[hsl(var(--foreground))];
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+    font-weight: 500;
+  }
+
+  h1 {
+    @apply text-balance;
+    font-weight: 600;
+    line-height: 1.08;
+  }
+
+  p {
+    line-height: 1.75;
+  }
+
+  strong {
+    @apply font-semibold;
   }
 
   html.high-contrast {
@@ -169,7 +189,7 @@
   }
 
   .stat-value {
-    @apply font-serif text-2xl font-normal tabular-nums sm:text-[1.65rem];
+    @apply font-serif text-2xl font-semibold tabular-nums sm:text-[1.65rem];
     background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-secondary)));
     -webkit-background-clip: text;
     background-clip: text;
@@ -177,11 +197,12 @@
   }
 
   .section-label {
-    @apply text-[11px] font-bold uppercase tracking-[0.18em] text-[hsl(var(--accent))];
+    @apply font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[hsl(var(--accent))];
   }
 
   .section-title {
-    @apply font-serif text-2xl font-normal tracking-tight sm:text-3xl lg:text-[2rem];
+    @apply font-serif text-2xl font-semibold tracking-tight sm:text-3xl lg:text-[2rem];
+    line-height: 1.15;
   }
 
   .section-divider {

@@ -82,7 +82,7 @@ export default function SearchPageContent() {
   return (
     <PageContainer className="space-y-8">
       <div className="max-w-2xl">
-        <h1 className="font-serif text-3xl font-normal tracking-tight">Search</h1>
+        <h1 className="font-serif text-3xl font-semibold tracking-editorial">Search</h1>
         <p className="mt-2 text-[hsl(var(--muted-foreground))]">Find articles by title, summary, tags, or source.</p>
         <label className="relative mt-6 block">
           <span className="sr-only">Search query</span>
