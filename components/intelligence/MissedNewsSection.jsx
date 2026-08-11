@@ -9,6 +9,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { IntelligenceSkeleton } from "@/components/intelligence/IntelligenceSkeleton";
 import { TrustBadge } from "@/components/intelligence/TrustBadge";
 import { formatRelativeTime } from "@/lib/utils/formatDate";
+import { fetchJsonSafe } from "@/lib/client/fetchJsonSafe.js";
 
 export function MissedNewsSection() {
   const { interestProfile, hydrated: profileReady } = useInterestProfile();
@@ -25,29 +26,25 @@ export function MissedNewsSection() {
     setLoading(true);
 
     (async () => {
-      try {
-        const res = await fetch("/api/ai/discover", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            readIds,
-            savedIds,
-            interestProfile,
-            limit: 5,
-            useAi: readIds.length >= 3,
-          }),
-        });
-        const json = await res.json();
-        if (!cancelled && json.success) {
-          setItems(json.data?.items ?? []);
-        }
-      } catch {
-        // silent
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-          setLoaded(true);
-        }
+      const { data: json } = await fetchJsonSafe("/api/ai/discover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          readIds,
+          savedIds,
+          interestProfile,
+          limit: 5,
+          useAi: readIds.length >= 3,
+        }),
+      });
+
+      if (!cancelled && json?.success) {
+        setItems(json.data?.items ?? []);
+      }
+
+      if (!cancelled) {
+        setLoading(false);
+        setLoaded(true);
       }
     })();
 

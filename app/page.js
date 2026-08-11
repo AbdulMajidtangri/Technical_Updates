@@ -128,17 +128,19 @@ export default async function HomePage() {
       <PageContainer className="space-y-20 py-12 sm:py-16">
         {!dbConnected ? (
           <div role="alert" className="rounded-lg border border-amber-300/80 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-950/30">
-            <h2 className="font-serif text-lg font-semibold">Database not connected</h2>
-            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">Configure <code className="rounded bg-[hsl(var(--muted))] px-1">.env.local</code> and restart the server.</p>
-            <Link href="/admin" className="link-accent mt-4 inline-block text-sm font-medium">Admin setup →</Link>
+            <h2 className="font-serif text-lg font-semibold">Library temporarily unavailable</h2>
+            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">
+              We couldn&apos;t load stories right now. Please check back shortly.
+            </p>
           </div>
         ) : null}
 
         {dbConnected && !topArticles.length && !latestArticles.length ? (
           <div role="status" className="card-premium p-8 text-center">
-            <h2 className="font-serif text-xl font-semibold">No articles in your library</h2>
-            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">Run a sync from Admin to populate your dashboard.</p>
-            <Link href="/admin" className="mt-6 inline-flex rounded-md bg-[hsl(var(--foreground))] px-5 py-2.5 text-sm font-medium text-[hsl(var(--background))]">Open Admin</Link>
+            <h2 className="font-serif text-xl font-semibold">No stories yet</h2>
+            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">
+              New articles will appear here once your library is updated.
+            </p>
           </div>
         ) : null}
 

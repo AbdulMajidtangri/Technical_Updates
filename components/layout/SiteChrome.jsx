@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { SearchProvider } from "@/components/search/SearchProvider";
 import { RouteProgress } from "@/components/navigation/RouteProgress";
 import { PrefetchRoutes } from "@/components/navigation/PrefetchRoutes";
+import { QuietPublicRuntime } from "@/components/providers/QuietPublicRuntime";
 
 export function SiteChrome({ children }) {
   const pathname = usePathname();
@@ -17,6 +18,7 @@ export function SiteChrome({ children }) {
 
   return (
     <SearchProvider>
+      <QuietPublicRuntime />
       <RouteProgress />
       <PrefetchRoutes />
       <div className="flex min-h-screen flex-col">

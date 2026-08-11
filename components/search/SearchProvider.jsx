@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2, Search, X } from "lucide-react";
+import { fetchJsonSafe } from "@/lib/client/fetchJsonSafe.js";
 
 const SearchDialogContext = createContext(null);
 
@@ -89,24 +90,18 @@ export function SearchProvider({ children }) {
     setLoading(true);
     setError("");
 
-    fetch(`/api/search?q=${encodeURIComponent(debounced)}&limit=8`)
-      .then((res) => res.json())
-      .then((json) => {
+    fetchJsonSafe(`/api/search?q=${encodeURIComponent(debounced)}&limit=8`)
+      .then(({ data: json }) => {
         if (cancelled) return;
-        if (!json.success) {
-          setError(json.error?.message ?? "Search failed");
+        if (!json?.success) {
+          setError(json?.error?.message ?? "Could not search right now");
           setResults([]);
           return;
         }
         const items = json.data?.results ?? [];
         cacheRef.current.set(debounced, items);
         setResults(items);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setError("Could not search right now");
-          setResults([]);
-        }
+        setError("");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

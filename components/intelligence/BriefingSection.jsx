@@ -8,6 +8,7 @@ import { useReadArticles } from "@/hooks/useReadArticles";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { IntelligenceSkeleton } from "@/components/intelligence/IntelligenceSkeleton";
 import { ImportanceIndicator } from "@/components/ui/ImportanceIndicator";
+import { fetchJsonSafe } from "@/lib/client/fetchJsonSafe.js";
 
 const TIME_OPTIONS = [
   { minutes: 5, label: "5 min", hint: "Quick catch-up" },
@@ -40,27 +41,23 @@ export function BriefingSection() {
     }
 
     (async () => {
-      try {
-        const res = await fetch("/api/briefing", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            minutes,
-            readIds,
-            interestProfile,
-          }),
-        });
-        const json = await res.json();
-        if (requestId !== requestIdRef.current) return;
-        if (json.success) setBriefing(json.data);
-      } catch {
-        if (requestId !== requestIdRef.current) return;
-        if (!hasContent) setBriefing(null);
-      } finally {
-        if (requestId !== requestIdRef.current) return;
-        setLoading(false);
-        setRefreshing(false);
-      }
+      const { data: json } = await fetchJsonSafe("/api/briefing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          minutes,
+          readIds,
+          interestProfile,
+        }),
+      });
+
+      if (requestId !== requestIdRef.current) return;
+      if (json?.success) setBriefing(json.data);
+      else if (!hasContent) setBriefing(null);
+
+      if (requestId !== requestIdRef.current) return;
+      setLoading(false);
+      setRefreshing(false);
     })();
   }, [minutes, profileReady, readReady, readIdsKey, interestKey]); // eslint-disable-line react-hooks/exhaustive-deps -- stable serialized deps
 
