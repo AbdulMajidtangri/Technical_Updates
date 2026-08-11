@@ -1,4 +1,4 @@
-import { Inter, Source_Serif_4 } from "next/font/google";
+import { Plus_Jakarta_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -6,14 +6,15 @@ import { ReadingSettingsProvider } from "@/components/providers/ReadingSettingsP
 import { HashScrollHandler } from "@/components/navigation/HashScrollHandler";
 import { BRAND } from "@/lib/config/brand.js";
 
-const inter = Inter({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-sans",
   display: "swap",
 });
 
-const sourceSerif = Source_Serif_4({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
+  weight: "400",
   variable: "--font-serif",
   display: "swap",
 });
@@ -34,7 +35,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${sourceSerif.variable} font-sans min-h-screen`}>
+      <body className={`${jakarta.variable} ${instrumentSerif.variable} font-sans min-h-screen page-shell`}>
         <ThemeProvider>
           <ReadingSettingsProvider>
             <HashScrollHandler />
