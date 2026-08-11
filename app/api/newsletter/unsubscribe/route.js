@@ -2,8 +2,13 @@ import { NextResponse } from "next/server";
 import { unsubscribeNewsletter } from "@/lib/newsletter/service.js";
 import { getAppBaseUrl } from "@/lib/email/mailer.js";
 import { BRAND } from "@/lib/config/brand.js";
+import { FEATURES } from "@/lib/config/features.js";
 
 export async function GET(request) {
+  if (!FEATURES.newsletter) {
+    return NextResponse.redirect(getAppBaseUrl(), 302);
+  }
+
   const token = new URL(request.url).searchParams.get("token");
 
   try {

@@ -2,8 +2,13 @@ import { jsonSuccess, jsonError, jsonFromError } from "@/lib/api/response.js";
 import { checkApiRateLimit, getApiClientKey } from "@/lib/security/apiRateLimit.js";
 import { readJsonBody } from "@/lib/security/validation.js";
 import { subscribeToNewsletter } from "@/lib/newsletter/service.js";
+import { FEATURES } from "@/lib/config/features.js";
 
 export async function POST(request) {
+  if (!FEATURES.newsletter) {
+    return jsonError("Newsletter is not available yet.", { status: 503, code: "NEWSLETTER_DISABLED" });
+  }
+
   try {
     const rate = checkApiRateLimit(getApiClientKey(request, "newsletter-subscribe"));
     if (!rate.allowed) {
