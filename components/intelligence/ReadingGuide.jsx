@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { IntelligenceSkeleton } from "./IntelligenceSkeleton";
 import { useKnowledgeProfile } from "@/hooks/useKnowledgeProfile";
+import { fetchJsonSafe } from "@/lib/client/fetchJsonSafe.js";
 
 function StepHeader({ step, title, description, status }) {
   return (
@@ -155,41 +156,31 @@ export function ReadingGuide({ articleId, sourceUrl }) {
     setLearnData(null);
     setActionData(null);
 
-    try {
-      const learnRes = await fetch("/api/intelligence/learn-path", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ articleId, knowledgeProfile: profileRef.current }),
-      }).then((r) => r.json());
+    const learnResult = await fetchJsonSafe("/api/intelligence/learn-path", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ articleId, knowledgeProfile: profileRef.current }),
+    });
 
-      if (learnRes.success) {
-        setLearnData(learnRes.data);
-      } else {
-        setLearnError(learnRes.error?.message ?? "Term help is temporarily unavailable.");
-      }
-    } catch {
-      setLearnError("Term help is temporarily unavailable.");
-    } finally {
-      setLearnLoading(false);
+    if (learnResult.data?.success) {
+      setLearnData(learnResult.data.data);
+    } else if (learnResult.data) {
+      setLearnError(learnResult.data.error?.message ?? "Term help is temporarily unavailable.");
     }
+    setLearnLoading(false);
 
-    try {
-      const actionRes = await fetch("/api/intelligence/action-planner", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ articleId }),
-      }).then((r) => r.json());
+    const actionResult = await fetchJsonSafe("/api/intelligence/action-planner", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ articleId }),
+    });
 
-      if (actionRes.success) {
-        setActionData(actionRes.data);
-      } else {
-        setActionError(actionRes.error?.message ?? "Action check is temporarily unavailable.");
-      }
-    } catch {
-      setActionError("Action check is temporarily unavailable.");
-    } finally {
-      setActionLoading(false);
+    if (actionResult.data?.success) {
+      setActionData(actionResult.data.data);
+    } else if (actionResult.data) {
+      setActionError(actionResult.data.error?.message ?? "Action check is temporarily unavailable.");
     }
+    setActionLoading(false);
   }, [articleId, hydrated]);
 
   useEffect(() => {

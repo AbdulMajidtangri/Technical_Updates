@@ -45,7 +45,6 @@ export default async function HomePage() {
   let stats = null;
   let topNews = null;
   let latestNews = null;
-  let dbError = null;
 
   let developingStories = [];
 
@@ -56,9 +55,8 @@ export default async function HomePage() {
       getArticles({ limit: 40 }),
     ]);
     developingStories = await getDevelopingStories(6);
-  } catch (error) {
+  } catch {
     stats = null;
-    dbError = error?.message ?? "Connection failed";
   }
 
   const dbConnected = stats !== null;
@@ -134,9 +132,6 @@ export default async function HomePage() {
             <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">
               We couldn&apos;t load stories right now. Please check back shortly.
             </p>
-            {process.env.NODE_ENV === "development" && dbError ? (
-              <p className="mt-3 rounded-md bg-[hsl(var(--muted))]/50 px-3 py-2 font-mono text-xs text-[hsl(var(--foreground))]">{dbError}</p>
-            ) : null}
           </div>
         ) : null}
 
