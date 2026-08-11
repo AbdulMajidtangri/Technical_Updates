@@ -4,6 +4,7 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ReadingSettingsProvider } from "@/components/providers/ReadingSettingsProvider";
 import { HashScrollHandler } from "@/components/navigation/HashScrollHandler";
+import { BRAND } from "@/lib/config/brand.js";
 
 const inter = Inter({
   subsets: ["latin"],

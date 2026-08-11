@@ -1,6 +1,6 @@
 {
-  "appId": "com.techpulse.ai",
-  "appName": "TechPulse AI",
+  "appId": "com.inkwellatlas.app",
+  "appName": "Inkwell Atlas",
   "webDir": "public",
   "server": {
     "url": "https://YOUR_DEPLOYED_URL.vercel.app",

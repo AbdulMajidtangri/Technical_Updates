@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { KeyRound, ShieldCheck } from "lucide-react";
+import { KeyRound, ShieldCheck } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { BRAND } from "@/lib/config/brand.js";
 import { useAdminSecret } from "@/hooks/useAdminSecret";
@@ -54,7 +56,7 @@ export function AdminGate() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[hsl(222_47%_5%)] px-4">
+    <div className="flex min-h-screen items-center justify-center bg-[hsl(260_18%_5%)] px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="flex justify-center">

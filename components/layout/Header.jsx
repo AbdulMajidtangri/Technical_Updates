@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, Moon, Search, Sun, X } from "lucide-react";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { Button } from "@/components/ui/Button";
 import { ReadingSettingsButton } from "@/components/accessibility/ReadingSettingsButton";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { NavLink } from "@/components/navigation/NavLink";
 
 const NAV = [

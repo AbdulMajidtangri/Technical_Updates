@@ -3,7 +3,7 @@ export function Button({ children, variant = "primary", size = "md", className =
     primary: "bg-[hsl(var(--foreground))] text-[hsl(var(--background))] hover:opacity-90 focus-visible:outline-[hsl(var(--foreground))]",
     secondary: "border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))]",
     ghost: "text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))]",
-    accent: "bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] hover:opacity-90",
+    accent: "bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--accent-secondary))] text-[hsl(var(--accent-foreground))] hover:opacity-90 shadow-sm",
     danger: "bg-red-600 text-white hover:bg-red-700",
   };
 
