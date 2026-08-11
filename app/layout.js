@@ -18,8 +18,6 @@ const sourceSerif = Source_Serif_4({
   display: "swap",
 });
 
-import { BRAND } from "@/lib/config/brand.js";
-
 export const metadata = {
   title: {
     default: `${BRAND.name} — News Intelligence`,

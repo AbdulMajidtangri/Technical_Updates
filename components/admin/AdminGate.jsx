@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { KeyRound, ShieldCheck } from "lucide-react";
-import { KeyRound, ShieldCheck } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { BRAND } from "@/lib/config/brand.js";
 import { useAdminSecret } from "@/hooks/useAdminSecret";
@@ -60,7 +59,7 @@ export function AdminGate() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="flex justify-center">
-            <BrandLogo size="lg" />
+            <BrandLogo size="lg" variant="light" />
           </div>
           <h1 className="mt-4 font-serif text-3xl font-semibold text-white">Control Center</h1>
           <p className="mt-2 text-sm leading-relaxed text-white/60">
@@ -71,7 +70,7 @@ export function AdminGate() {
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-white/10 bg-[hsl(222_47%_8%)] p-6 shadow-2xl"
+          className="rounded-2xl border border-white/10 bg-[hsl(260_16%_8%)] p-6 shadow-2xl"
         >
           <label className="block text-sm font-medium text-white">
             Operations key
@@ -86,7 +85,7 @@ export function AdminGate() {
                 }}
                 placeholder="Same as CRON_SECRET in .env.local"
                 autoComplete="current-password"
-                className="w-full rounded-lg border border-white/10 bg-[hsl(222_47%_6%)] py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-white/30 focus:border-[hsl(var(--accent))] focus:outline-none"
+                className="w-full rounded-lg border border-white/10 bg-[hsl(260_16%_6%)] py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-white/30 focus:border-[hsl(var(--accent))] focus:outline-none"
               />
             </div>
           </label>

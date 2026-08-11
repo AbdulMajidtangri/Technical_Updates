@@ -6,8 +6,9 @@ const SIZE = {
   lg: { box: "h-12 w-12 text-sm", name: "text-2xl" },
 };
 
-export function BrandLogo({ size = "md", showName = true, className = "" }) {
+export function BrandLogo({ size = "md", showName = true, className = "", variant = "default" }) {
   const s = SIZE[size] ?? SIZE.md;
+  const nameClass = variant === "light" ? "text-white" : "text-[hsl(var(--foreground))]";
 
   return (
     <span className={`flex items-center gap-2.5 ${className}`}>
@@ -18,7 +19,7 @@ export function BrandLogo({ size = "md", showName = true, className = "" }) {
         {BRAND.monogram}
       </span>
       {showName ? (
-        <span className={`font-serif font-semibold tracking-tight ${s.name}`}>
+        <span className={`font-serif font-semibold tracking-tight ${nameClass} ${s.name}`}>
           {BRAND.shortName}
           <span className="text-[hsl(var(--accent))]"> Atlas</span>
         </span>

@@ -44,7 +44,7 @@ export function AdminShell({ children, serverAuthenticated = false }) {
       <div className="flex min-h-screen">
         <aside className="hidden w-64 shrink-0 flex-col border-r border-white/10 bg-[hsl(260_16%_7%)] lg:flex">
           <div className="border-b border-white/10 px-5 py-6">
-            <BrandLogo size="sm" />
+            <BrandLogo size="sm" variant="light" />
             <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-white/50">Control Center</p>
           </div>
 
