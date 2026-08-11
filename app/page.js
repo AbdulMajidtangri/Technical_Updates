@@ -70,16 +70,17 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="border-b border-[hsl(var(--border))] bg-[hsl(var(--card))]">
+      <section className="border-b border-[hsl(var(--border))] hero-surface">
         <PageContainer className="py-10 sm:py-14">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="section-label">{formatToday()}</p>
               <h1 className="mt-3 font-serif text-3xl font-semibold tracking-tight sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
-                Don&apos;t just read the news. Understand what it means.
+                Don&apos;t just read the news.{" "}
+                <span className="text-[hsl(var(--accent))]">Understand what it means.</span>
               </h1>
               <p className="mt-4 text-base leading-relaxed text-[hsl(var(--muted-foreground))] sm:text-lg">
-                AI-powered news intelligence — collect, understand, analyze impact, connect stories, and explore scenarios.
+                Your personal intelligence desk — AI summaries, impact analysis, and a reading guide on every story.
               </p>
               {statsData.lastUpdated ? (
                 <p className="mt-3 text-sm text-[hsl(var(--muted-foreground))]">
@@ -96,7 +97,7 @@ export default async function HomePage() {
                 ["Priority", statsData.importantArticles],
               ].map(([label, value]) => (
                 <div key={label} className="bg-[hsl(var(--card))] px-4 py-4 text-center sm:py-5">
-                  <p className="font-serif text-2xl font-semibold tabular-nums">{Number(value).toLocaleString()}</p>
+                  <p className="stat-value">{Number(value).toLocaleString()}</p>
                   <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]">{label}</p>
                 </div>
               ))}

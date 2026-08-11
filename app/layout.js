@@ -17,16 +17,18 @@ const sourceSerif = Source_Serif_4({
   display: "swap",
 });
 
+import { BRAND } from "@/lib/config/brand.js";
+
 export const metadata = {
   title: {
-    default: "TechPulse AI — News Intelligence",
-    template: "%s | TechPulse AI",
+    default: `${BRAND.name} — News Intelligence`,
+    template: `%s | ${BRAND.name}`,
   },
-  description: "Professional technology news intelligence. Ranked, analyzed, and explained.",
+  description: BRAND.description,
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: "TechPulse AI",
+    title: BRAND.name,
   },
 };
 

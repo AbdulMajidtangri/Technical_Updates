@@ -23,11 +23,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-[hsl(var(--border))] bg-[hsl(var(--card))]/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href="/" prefetch onClick={closeMenu} className="group flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[hsl(var(--foreground))] text-xs font-bold tracking-wider text-[hsl(var(--background))]">
-            TP
-          </span>
-          <span className="font-serif text-lg font-semibold tracking-tight">TechPulse</span>
+        <Link href="/" prefetch onClick={closeMenu} className="group">
+          <BrandLogo size="md" />
         </Link>
 
         <nav className="hidden items-center gap-0.5 md:flex" aria-label="Main">

@@ -11,7 +11,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useAdminSecret } from "@/hooks/useAdminSecret";
-import { AdminGate } from "./AdminGate";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },

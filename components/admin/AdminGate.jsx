@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { KeyRound, ShieldCheck } from "lucide-react";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { BRAND } from "@/lib/config/brand.js";
 import { useAdminSecret } from "@/hooks/useAdminSecret";
 import { Button } from "@/components/ui/Button";
 
@@ -56,9 +57,9 @@ export function AdminGate() {
     <div className="flex min-h-screen items-center justify-center bg-[hsl(222_47%_5%)] px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[hsl(var(--accent))] text-sm font-bold text-white">
-            TP
-          </span>
+          <div className="flex justify-center">
+            <BrandLogo size="lg" />
+          </div>
           <h1 className="mt-4 font-serif text-3xl font-semibold text-white">Control Center</h1>
           <p className="mt-2 text-sm leading-relaxed text-white/60">
             Owner-only area for news sync, system health, and intelligence checks.
@@ -105,7 +106,7 @@ export function AdminGate() {
 
         <p className="mt-6 text-center text-xs text-white/40">
           <Link href="/" className="hover:text-white/70">
-            ← Back to TechPulse
+            ← Back to {BRAND.shortName} Atlas
           </Link>
         </p>
       </div>
