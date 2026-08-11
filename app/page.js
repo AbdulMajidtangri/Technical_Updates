@@ -45,6 +45,7 @@ export default async function HomePage() {
   let stats = null;
   let topNews = null;
   let latestNews = null;
+  let dbError = null;
 
   let developingStories = [];
 
@@ -55,8 +56,9 @@ export default async function HomePage() {
       getArticles({ limit: 40 }),
     ]);
     developingStories = await getDevelopingStories(6);
-  } catch {
+  } catch (error) {
     stats = null;
+    dbError = error?.message ?? "Connection failed";
   }
 
   const dbConnected = stats !== null;
@@ -129,7 +131,15 @@ export default async function HomePage() {
         {!dbConnected ? (
           <div role="alert" className="rounded-lg border border-amber-300/80 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-950/30">
             <h2 className="font-serif text-lg font-semibold">Database not connected</h2>
-            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">Configure <code className="rounded bg-[hsl(var(--muted))] px-1">.env.local</code> and restart the server.</p>
+            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">
+              Only one <code className="rounded bg-[hsl(var(--muted))] px-1">MONGODB_URI</code> should be active in{" "}
+              <code className="rounded bg-[hsl(var(--muted))] px-1">.env.local</code>. For Atlas, use the{" "}
+              <code className="rounded bg-[hsl(var(--muted))] px-1">mongodb+srv://</code> string from Atlas → Connect, allow your IP in Network Access, then run{" "}
+              <code className="rounded bg-[hsl(var(--muted))] px-1">npm run test:db</code> and restart the dev server.
+            </p>
+            {process.env.NODE_ENV === "development" && dbError ? (
+              <p className="mt-3 rounded-md bg-[hsl(var(--muted))]/50 px-3 py-2 font-mono text-xs text-[hsl(var(--foreground))]">{dbError}</p>
+            ) : null}
             <Link href="/admin" className="link-accent mt-4 inline-block text-sm font-medium">Admin setup →</Link>
           </div>
         ) : null}
