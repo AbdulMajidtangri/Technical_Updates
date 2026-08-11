@@ -29,6 +29,9 @@ function buildContentSecurityPolicy(dev) {
 }
 
 const nextConfig = {
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**" },

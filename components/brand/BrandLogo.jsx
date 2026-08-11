@@ -13,13 +13,13 @@ export function BrandLogo({ size = "md", showName = true, className = "", varian
   return (
     <span className={`flex items-center gap-2.5 ${className}`}>
       <span
-        className={`brand-mark flex shrink-0 items-center justify-center rounded-lg font-bold tracking-tight text-white ${s.box}`}
+        className={`brand-mark flex shrink-0 items-center justify-center rounded-xl font-bold tracking-tight text-white ring-2 ring-[hsl(var(--card))] ${s.box}`}
         aria-hidden="true"
       >
         {BRAND.monogram}
       </span>
       {showName ? (
-        <span className={`font-serif font-semibold tracking-tight ${nameClass} ${s.name}`}>
+        <span className={`font-serif font-semibold tracking-editorial ${nameClass} ${s.name}`}>
           {BRAND.shortName}
           <span className="text-[hsl(var(--accent))]"> Atlas</span>
         </span>

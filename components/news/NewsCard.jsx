@@ -65,8 +65,8 @@ function AiSummary({ article, compact = false }) {
   if (!text) return null;
 
   return (
-    <div className={`rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--surface))] ${compact ? "mt-2 p-2.5" : "mt-3 p-3 sm:p-3.5"}`}>
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-[hsl(var(--muted-foreground))]">AI summary</p>
+    <div className={`ai-summary-box ${compact ? "mt-2 p-2.5 pl-4" : "mt-3 p-3 pl-4 sm:p-3.5 sm:pl-5"}`}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[hsl(var(--accent))]">AI insight</p>
       <p className={`mt-1.5 leading-relaxed text-[hsl(var(--foreground))] ${compact ? "line-clamp-2 text-xs" : "line-clamp-3 text-sm"}`}>
         {text}
       </p>
@@ -152,7 +152,8 @@ export function NewsCard({ article, variant = "default", featured = false, showC
           onClick={mark}
           className="relative block aspect-[16/10] shrink-0 overflow-hidden bg-[hsl(var(--surface))] lg:aspect-auto lg:w-[52%] lg:min-h-[280px]"
         >
-          <ArticleImage src={article.imageUrl} alt="" priority className="transition duration-500 group-hover:scale-[1.03]" />
+          <ArticleImage src={article.imageUrl} alt="" priority className="transition duration-500 group-hover:scale-[1.04]" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[hsl(var(--foreground)/0.35)] via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           {read ? (
             <span className="absolute left-3 top-3 rounded bg-[hsl(var(--foreground))]/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[hsl(var(--background))]">
               Read
@@ -184,7 +185,8 @@ export function NewsCard({ article, variant = "default", featured = false, showC
         onClick={mark}
         className={`relative block shrink-0 overflow-hidden bg-[hsl(var(--surface))] ${isCompact ? "aspect-[3/2]" : "aspect-[4/3]"}`}
       >
-        <ArticleImage src={article.imageUrl} alt="" className="transition duration-300 group-hover:scale-[1.03]" />
+        <ArticleImage src={article.imageUrl} alt="" className="transition duration-500 group-hover:scale-[1.05]" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[hsl(var(--foreground)/0.25)] to-transparent" />
         {read ? (
           <span className="absolute left-2.5 top-2.5 rounded bg-[hsl(var(--foreground))]/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[hsl(var(--background))]">
             Read

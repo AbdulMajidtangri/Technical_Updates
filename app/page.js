@@ -11,6 +11,7 @@ import { BriefingSection } from "@/components/intelligence/BriefingSection";
 import { getDevelopingStories } from "@/lib/data/stories.js";
 import { getCategorySlug } from "@/lib/config/categories";
 import { formatRelativeTime } from "@/lib/utils/formatDate";
+import { BRAND } from "@/lib/config/brand.js";
 
 export const dynamic = "force-dynamic";
 
@@ -70,35 +71,53 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="border-b border-[hsl(var(--border))] hero-surface">
-        <PageContainer className="py-10 sm:py-14">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+      <section className="px-4 pt-6 sm:px-6 lg:px-8">
+        <PageContainer className="hero-panel animate-fade-up px-6 py-10 sm:px-10 sm:py-14 lg:py-16">
+          <div className="hero-orb -left-20 -top-20 h-56 w-56 bg-[hsl(var(--accent)/0.2)]" aria-hidden="true" />
+          <div className="hero-orb -right-16 top-8 h-48 w-48 bg-[hsl(var(--accent-secondary)/0.15)]" aria-hidden="true" />
+
+          <div className="relative flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="section-label">{formatToday()}</p>
-              <h1 className="mt-3 font-serif text-3xl font-semibold tracking-tight sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
+              <span className="eyebrow-badge">{BRAND.name}</span>
+              <p className="section-label mt-5">{formatToday()}</p>
+              <h1 className="mt-3 font-serif text-[2rem] font-semibold leading-[1.08] sm:text-4xl lg:text-[3.25rem]">
                 Don&apos;t just read the news.{" "}
-                <span className="text-[hsl(var(--accent))]">Understand what it means.</span>
+                <span className="text-gradient">Understand what it means.</span>
               </h1>
-              <p className="mt-4 text-base leading-relaxed text-[hsl(var(--muted-foreground))] sm:text-lg">
-                Your personal intelligence desk — AI summaries, impact analysis, and a reading guide on every story.
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-[hsl(var(--muted-foreground))] sm:text-lg">
+                Your personal intelligence desk — curated stories, AI summaries, and a reading guide on every article.
               </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link
+                  href="/#briefing"
+                  className="inline-flex items-center rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--accent-secondary))] px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:opacity-95"
+                >
+                  Start briefing
+                </Link>
+                <Link
+                  href="/categories"
+                  className="inline-flex items-center rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/0.8)] px-5 py-2.5 text-sm font-semibold text-[hsl(var(--foreground))] transition hover:border-[hsl(var(--accent)/0.4)]"
+                >
+                  Browse topics
+                </Link>
+              </div>
               {statsData.lastUpdated ? (
-                <p className="mt-3 text-sm text-[hsl(var(--muted-foreground))]">
+                <p className="mt-4 text-sm text-[hsl(var(--muted-foreground))]">
                   Last sync {formatRelativeTime(statsData.lastUpdated)}
                 </p>
               ) : null}
             </div>
 
-            <div className="grid w-full max-w-lg grid-cols-2 gap-px overflow-hidden rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--border))] sm:grid-cols-4 lg:max-w-xl">
+            <div className="grid w-full max-w-lg grid-cols-2 gap-3 sm:grid-cols-4 lg:max-w-xl">
               {[
                 ["Articles", statsData.totalArticles],
                 ["Analyzed", statsData.articlesAnalyzed],
                 ["Today", statsData.articlesToday],
                 ["Priority", statsData.importantArticles],
               ].map(([label, value]) => (
-                <div key={label} className="bg-[hsl(var(--card))] px-4 py-4 text-center sm:py-5">
+                <div key={label} className="stat-card">
                   <p className="stat-value">{Number(value).toLocaleString()}</p>
-                  <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]">{label}</p>
+                  <p className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[hsl(var(--muted-foreground))]">{label}</p>
                 </div>
               ))}
             </div>

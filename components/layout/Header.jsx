@@ -8,6 +8,7 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import { Button } from "@/components/ui/Button";
 import { ReadingSettingsButton } from "@/components/accessibility/ReadingSettingsButton";
 import { NavLink } from "@/components/navigation/NavLink";
+import { useSearchDialog } from "@/components/search/SearchProvider";
 
 const NAV = [
   { href: "/", label: "Home" },
@@ -18,32 +19,34 @@ const NAV = [
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { openSearch } = useSearchDialog();
   const [open, setOpen] = useState(false);
   const closeMenu = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[hsl(var(--border))] bg-[hsl(var(--card))]/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href="/" prefetch onClick={closeMenu} className="group">
+    <header className="glass-header sticky top-0 z-50">
+      <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <Link href="/" prefetch onClick={closeMenu} className="group transition-opacity hover:opacity-90">
           <BrandLogo size="md" />
         </Link>
 
-        <nav className="hidden items-center gap-0.5 md:flex" aria-label="Main">
+        <nav className="nav-rail" aria-label="Main">
           {NAV.map((item) => (
-            <NavLink key={item.href} {...item} />
+            <NavLink key={item.href} {...item} pill />
           ))}
         </nav>
 
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-1">
           <ReadingSettingsButton />
-          <Link
-            href="/search"
-            prefetch
-            className="rounded-md p-2.5 text-[hsl(var(--muted-foreground))] transition hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))]"
-            aria-label="Search"
+          <button
+            type="button"
+            onClick={() => openSearch("")}
+            className="group flex items-center gap-2 rounded-full border border-[hsl(var(--border)/0.8)] bg-[hsl(var(--muted)/0.45)] px-3 py-2 text-[13px] font-medium text-[hsl(var(--muted-foreground))] transition hover:border-[hsl(var(--accent)/0.35)] hover:text-[hsl(var(--foreground))] max-sm:p-2.5"
+            aria-label="Open search"
           >
-            <Search className="h-[18px] w-[18px]" />
-          </Link>
+            <Search className="h-[17px] w-[17px]" />
+            <span className="hidden sm:inline">Search</span>
+          </button>
           <Button type="button" variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
           </Button>
@@ -62,13 +65,23 @@ export function Header() {
       </div>
 
       {open ? (
-        <nav className="border-t border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-3 md:hidden" aria-label="Mobile">
-          <div className="flex flex-col gap-0.5">
+        <nav className="border-t border-[hsl(var(--border)/0.7)] bg-[hsl(var(--card)/0.95)] px-4 py-3 backdrop-blur-xl md:hidden" aria-label="Mobile">
+          <div className="flex flex-col gap-1">
             {NAV.map((item) => (
-              <NavLink key={item.href} {...item} onNavigate={closeMenu} className="block w-full rounded-md px-3 py-2.5" />
+              <NavLink key={item.href} {...item} onNavigate={closeMenu} pill className="block w-full rounded-xl px-3 py-2.5" />
             ))}
-            <NavLink href="/knowledge" label="My learning" onNavigate={closeMenu} className="block w-full rounded-md px-3 py-2.5" />
-            <NavLink href="/stories" label="Stories" onNavigate={closeMenu} className="block w-full rounded-md px-3 py-2.5" />
+            <button
+              type="button"
+              onClick={() => {
+                closeMenu();
+                openSearch("");
+              }}
+              className="block w-full rounded-xl px-3 py-2.5 text-left text-[13px] font-semibold text-[hsl(var(--muted-foreground))] transition hover:bg-[hsl(var(--card)/0.6)] hover:text-[hsl(var(--foreground))]"
+            >
+              Search
+            </button>
+            <NavLink href="/knowledge" label="My learning" onNavigate={closeMenu} pill className="block w-full rounded-xl px-3 py-2.5" />
+            <NavLink href="/stories" label="Stories" onNavigate={closeMenu} pill className="block w-full rounded-xl px-3 py-2.5" />
           </div>
         </nav>
       ) : null}
