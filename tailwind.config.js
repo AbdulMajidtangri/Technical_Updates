@@ -21,9 +21,9 @@ module.exports = {
         caps: "0.2em",
       },
       boxShadow: {
-        card: "0 1px 3px 0 hsl(260 20% 10% / 0.05), 0 8px 20px -6px hsl(265 60% 40% / 0.08)",
-        elevated: "0 8px 30px -6px hsl(265 60% 40% / 0.15), 0 4px 12px -4px hsl(260 20% 10% / 0.08)",
-        glow: "0 0 40px -8px hsl(var(--glow) / 0.45)",
+        card: "0 1px 3px 0 hsl(220 15% 10% / 0.06)",
+        elevated: "0 4px 12px -2px hsl(220 15% 10% / 0.1)",
+        glow: "none",
       },
       animation: {
         "fade-up": "fade-up 0.6s ease-out both",

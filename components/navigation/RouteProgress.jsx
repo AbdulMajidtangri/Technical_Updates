@@ -35,7 +35,7 @@ export function RouteProgress() {
 
   return (
     <div
-      className="pointer-events-none fixed left-0 top-0 z-[300] h-0.5 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--accent-secondary))] transition-[width] duration-200 ease-out shadow-glow"
+      className="pointer-events-none fixed left-0 top-0 z-[300] h-0.5 bg-[hsl(var(--foreground))] transition-[width] duration-200 ease-out"
       style={{ width: `${width}%` }}
       aria-hidden="true"
     />

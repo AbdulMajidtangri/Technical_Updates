@@ -48,7 +48,7 @@ export function NavLink({ href, label, onNavigate, className = "", pill = false 
     <Link href={href} prefetch onClick={handleClick} className={`${base} ${colors}`}>
       {label}
       {!pill && active && !hash ? (
-        <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--accent-secondary))]" aria-hidden="true" />
+        <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-[hsl(var(--foreground))]" aria-hidden="true" />
       ) : null}
     </Link>
   );

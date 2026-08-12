@@ -20,8 +20,7 @@ export function BrandLogo({ size = "md", showName = true, className = "", varian
       </span>
       {showName ? (
         <span className={`font-serif font-semibold tracking-editorial ${nameClass} ${s.name}`}>
-          {BRAND.shortName}
-          <span className="text-[hsl(var(--accent))]"> Atlas</span>
+          {BRAND.name}
         </span>
       ) : null}
     </span>

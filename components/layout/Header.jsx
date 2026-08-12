@@ -41,7 +41,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => openSearch("")}
-            className="group flex items-center gap-2 rounded-full border border-[hsl(var(--border)/0.8)] bg-[hsl(var(--muted)/0.45)] px-3 py-2 text-[13px] font-medium text-[hsl(var(--muted-foreground))] transition hover:border-[hsl(var(--accent)/0.35)] hover:text-[hsl(var(--foreground))] max-sm:p-2.5"
+            className="group flex items-center gap-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--muted))] px-3 py-2 text-[13px] font-medium text-[hsl(var(--muted-foreground))] transition hover:bg-[hsl(var(--card))] hover:text-[hsl(var(--foreground))] max-sm:p-2.5"
             aria-label="Open search"
           >
             <Search className="h-[17px] w-[17px]" />
