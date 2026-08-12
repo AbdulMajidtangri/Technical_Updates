@@ -73,16 +73,12 @@ export default async function HomePage() {
     <>
       <section className="px-4 pt-6 sm:px-6 lg:px-8">
         <PageContainer className="hero-panel animate-fade-up px-6 py-10 sm:px-10 sm:py-14 lg:py-16">
-          <div className="hero-orb -left-20 -top-20 h-56 w-56 bg-[hsl(var(--accent)/0.2)]" aria-hidden="true" />
-          <div className="hero-orb -right-16 top-8 h-48 w-48 bg-[hsl(var(--accent-secondary)/0.15)]" aria-hidden="true" />
-
-          <div className="relative flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <span className="eyebrow-badge">{BRAND.name}</span>
               <p className="section-label mt-5">{formatToday()}</p>
               <h1 className="mt-3 font-serif text-[2rem] font-semibold leading-[1.08] sm:text-4xl lg:text-[3.25rem]">
-                Don&apos;t just read the news.{" "}
-                <span className="text-gradient">Understand what it means.</span>
+                Don&apos;t just read the news. Understand what it means.
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-[hsl(var(--muted-foreground))] sm:text-lg">
                 Your personal intelligence desk — curated stories, AI summaries, and a reading guide on every article.
@@ -90,13 +86,13 @@ export default async function HomePage() {
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/#briefing"
-                  className="inline-flex items-center rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--accent-secondary))] px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:opacity-95"
+                  className="inline-flex items-center rounded-md bg-[hsl(var(--foreground))] px-5 py-2.5 text-sm font-medium text-[hsl(var(--background))] transition hover:opacity-90"
                 >
                   Start briefing
                 </Link>
                 <Link
                   href="/categories"
-                  className="inline-flex items-center rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/0.8)] px-5 py-2.5 text-sm font-semibold text-[hsl(var(--foreground))] transition hover:border-[hsl(var(--accent)/0.4)]"
+                  className="inline-flex items-center rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-5 py-2.5 text-sm font-medium text-[hsl(var(--foreground))] transition hover:bg-[hsl(var(--muted))]"
                 >
                   Browse topics
                 </Link>

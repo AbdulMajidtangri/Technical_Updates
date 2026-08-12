@@ -4,8 +4,8 @@
   "description": "Map the news. Keep the meaning.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#faf8f5",
-  "theme_color": "#7c3aed",
+  "background_color": "#fafafa",
+  "theme_color": "#1f2329",
   "icons": [
     {
       "src": "/favicon.svg",
