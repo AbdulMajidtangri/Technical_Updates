@@ -1,15 +1,14 @@
 "use client";
 
-import { Download, Share, X } from "lucide-react";
+import { Download, MoreVertical, Share, X } from "lucide-react";
 import { usePwaInstallContext } from "@/components/pwa/PwaInstallProvider";
 import { BRAND } from "@/lib/config/brand.js";
 import { Button } from "@/components/ui/Button";
 
 export function InstallPrompt() {
-  const { canInstall, showIosHint, installed, install, dismiss } = usePwaInstallContext();
+  const { canInstall, showIosHint, showAndroidMenuHint, visible, install, dismiss } = usePwaInstallContext();
 
-  if (installed) return null;
-  if (!canInstall && !showIosHint) return null;
+  if (!visible) return null;
 
   return (
     <div
@@ -28,10 +27,20 @@ export function InstallPrompt() {
             <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
               Add {BRAND.name} to your home screen for quick access, like an app.
             </p>
-          ) : (
+          ) : showIosHint ? (
             <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
               On iPhone/iPad: tap <Share className="mx-0.5 inline h-3.5 w-3.5" aria-hidden="true" /> Share, then{" "}
               <strong className="font-medium text-[hsl(var(--foreground))]">Add to Home Screen</strong>.
+            </p>
+          ) : showAndroidMenuHint ? (
+            <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
+              Tap <MoreVertical className="mx-0.5 inline h-3.5 w-3.5" aria-hidden="true" /> menu in Chrome, then{" "}
+              <strong className="font-medium text-[hsl(var(--foreground))]">Install app</strong> or{" "}
+              <strong className="font-medium text-[hsl(var(--foreground))]">Add to Home screen</strong>.
+            </p>
+          ) : (
+            <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
+              Install this site from your browser menu for app-like access.
             </p>
           )}
 

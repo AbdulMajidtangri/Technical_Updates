@@ -1,17 +1,11 @@
 /**
- * Minimal service worker — enables PWA install and basic offline fallback.
+ * Minimal service worker for PWA install (required by Chrome).
+ * Keep this simple — heavy precaching breaks on Vercel serverless pages.
  */
 const CACHE_NAME = "inkwell-atlas-v1";
-const PRECACHE_URLS = ["/", "/manifest.json", "/favicon.svg", "/icon", "/apple-icon"];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
-      .then(() => self.skipWaiting())
-      .catch(() => self.skipWaiting()),
-  );
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener("activate", (event) => {
@@ -30,6 +24,15 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request).then((cached) => cached ?? caches.match("/"))),
+    fetch(event.request).catch(async () => {
+      const cached = await caches.match(event.request);
+      return cached ?? (await caches.match("/offline.html"));
+    }),
   );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
