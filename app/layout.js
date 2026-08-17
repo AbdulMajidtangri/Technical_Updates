@@ -28,8 +28,17 @@ export const metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: BRAND.name,
+    title: BRAND.shortName,
+    statusBarStyle: "default",
   },
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon", sizes: "180x180", type: "image/png" }],
+  },
+};
+
+export const viewport = {
+  themeColor: "#1f2329",
 };
 
 export default function RootLayout({ children }) {

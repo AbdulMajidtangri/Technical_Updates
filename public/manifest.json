@@ -1,12 +1,34 @@
 {
+  "id": "/",
   "name": "Inkwell Atlas",
   "short_name": "Inkwell",
   "description": "Map the news. Keep the meaning.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#fafafa",
   "theme_color": "#1f2329",
+  "categories": ["news", "productivity"],
   "icons": [
+    {
+      "src": "/icon",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/apple-icon",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/favicon.svg",
       "sizes": "any",
