@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { Download } from "lucide-react";
 import { BRAND } from "@/lib/config/brand.js";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { usePwaInstallContext } from "@/components/pwa/PwaInstallProvider";
 
 const LINKS = [
   { href: "/", label: "Home" },
@@ -9,6 +13,25 @@ const LINKS = [
   { href: "/saved", label: "Saved & offline" },
   { href: "/search", label: "Search" },
 ];
+
+function InstallAppLink() {
+  const { canInstall, installed, install } = usePwaInstallContext();
+
+  if (installed || !canInstall) return null;
+
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={() => install()}
+        className="inline-flex items-center gap-1.5 text-[hsl(var(--muted-foreground))] transition hover:text-[hsl(var(--foreground))]"
+      >
+        <Download className="h-3.5 w-3.5" aria-hidden="true" />
+        Install app
+      </button>
+    </li>
+  );
+}
 
 export function Footer() {
   return (
@@ -25,11 +48,12 @@ export function Footer() {
           <ul className="space-y-3 text-sm">
             {LINKS.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="text-[hsl(var(--muted-foreground))] transition hover:text-[hsl(var(--accent))]">
+                <Link href={link.href} className="text-[hsl(var(--muted-foreground))] transition hover:text-[hsl(var(--foreground))]">
                   {link.label}
                 </Link>
               </li>
             ))}
+            <InstallAppLink />
           </ul>
         </div>
         <div>

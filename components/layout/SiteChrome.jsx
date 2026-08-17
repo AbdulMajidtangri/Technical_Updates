@@ -7,6 +7,9 @@ import { SearchProvider } from "@/components/search/SearchProvider";
 import { RouteProgress } from "@/components/navigation/RouteProgress";
 import { PrefetchRoutes } from "@/components/navigation/PrefetchRoutes";
 import { QuietPublicRuntime } from "@/components/providers/QuietPublicRuntime";
+import { PwaRegister } from "@/components/pwa/PwaRegister";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { PwaInstallProvider } from "@/components/pwa/PwaInstallProvider";
 
 export function SiteChrome({ children }) {
   const pathname = usePathname();
@@ -17,16 +20,20 @@ export function SiteChrome({ children }) {
   }
 
   return (
-    <SearchProvider>
-      <QuietPublicRuntime />
-      <RouteProgress />
-      <PrefetchRoutes />
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-      </div>
-    </SearchProvider>
+    <PwaInstallProvider>
+      <SearchProvider>
+        <PwaRegister />
+        <QuietPublicRuntime />
+        <RouteProgress />
+        <PrefetchRoutes />
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
+        <InstallPrompt />
+      </SearchProvider>
+    </PwaInstallProvider>
   );
 }
 
