@@ -15,9 +15,9 @@ const LINKS = [
 ];
 
 function InstallAppLink() {
-  const { canInstall, installed, install } = usePwaInstallContext();
+  const { canInstall, visible, install } = usePwaInstallContext();
 
-  if (installed || !canInstall) return null;
+  if (!visible && !canInstall) return null;
 
   return (
     <li>

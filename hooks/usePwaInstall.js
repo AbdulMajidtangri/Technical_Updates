@@ -17,11 +17,17 @@ function isIos() {
   return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 
+function isMobile() {
+  if (typeof window === "undefined") return false;
+  return /android|iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
 export function usePwaInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [canInstall, setCanInstall] = useState(false);
-  const [showIosHint, setShowIosHint] = useState(false);
+  const [showMobileHint, setShowMobileHint] = useState(false);
   const [installed, setInstalled] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     if (isStandalone()) {
@@ -29,26 +35,27 @@ export function usePwaInstall() {
       return;
     }
 
-    const dismissed = window.localStorage.getItem(DISMISS_KEY);
-    if (dismissed === "1") return;
+    setDismissed(window.localStorage.getItem(DISMISS_KEY) === "1");
 
     function onBeforeInstallPrompt(event) {
       event.preventDefault();
       setDeferredPrompt(event);
       setCanInstall(true);
+      setShowMobileHint(true);
     }
 
     function onInstalled() {
       setInstalled(true);
       setCanInstall(false);
       setDeferredPrompt(null);
+      setShowMobileHint(false);
     }
 
     window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
     window.addEventListener("appinstalled", onInstalled);
 
-    if (isIos() && !isStandalone()) {
-      setShowIosHint(true);
+    if (isMobile() && !isStandalone()) {
+      setShowMobileHint(true);
     }
 
     return () => {
@@ -67,6 +74,7 @@ export function usePwaInstall() {
 
     if (outcome === "accepted") {
       setInstalled(true);
+      setShowMobileHint(false);
       return true;
     }
 
@@ -75,14 +83,19 @@ export function usePwaInstall() {
 
   const dismiss = useCallback(() => {
     window.localStorage.setItem(DISMISS_KEY, "1");
+    setDismissed(true);
     setCanInstall(false);
-    setShowIosHint(false);
+    setShowMobileHint(false);
   }, []);
+
+  const visible = !installed && !dismissed && showMobileHint;
 
   return {
     canInstall,
-    showIosHint,
+    showIosHint: isIos(),
+    showAndroidMenuHint: !isIos() && isMobile() && !canInstall,
     installed,
+    visible,
     install,
     dismiss,
   };

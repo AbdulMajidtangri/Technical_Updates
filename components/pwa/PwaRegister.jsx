@@ -6,9 +6,11 @@ export function PwaRegister() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
 
-    navigator.serviceWorker.register("/sw.js").catch(() => {
-      // Silent — install UI still works where supported without SW
-    });
+    navigator.serviceWorker
+      .register("/sw.js", { scope: "/", updateViaCache: "none" })
+      .catch(() => {
+        // Silent — manual install hints still show on mobile
+      });
   }, []);
 
   return null;

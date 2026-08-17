@@ -16,7 +16,9 @@ export function usePwaInstallContext() {
     return {
       canInstall: false,
       showIosHint: false,
+      showAndroidMenuHint: false,
       installed: false,
+      visible: false,
       install: async () => false,
       dismiss: () => {},
     };
